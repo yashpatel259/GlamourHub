@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - GlamourHub</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/GlamourHub.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/logo1.1.png" alt="Logo" width="60" height="60" class="d-inline-block align-text-top">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                        aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">About</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center flex-column flex-sm-row">
+                        <form class="d-flex mb-2 mb-sm-0">
+                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                            <button class="btn btn-outline-info" type="submit">Search</button>
+                        </form>
+                        <div class="d-flex mt-2 mt-sm-0 navbar-nav">
+                            <a class="btn nav-link text-decoration-none me-2" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                            <a class="btn nav-link text-decoration-none me-2" asp-area="" asp-controller="Home" asp-action="BecomeSeller">Become a Seller</a>
+                            <a class="btn nav-link text-decoration-none me-2" asp-area="" asp-controller="Home" asp-action="Cart">
+                                <i class="fas fa-shopping-cart"></i> Cart
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+ 
+
+    <footer class="border-top footer text-muted">
+        <div class="container d-flex justify-content-between">
+            <div>
+                <a class="text-decoration-none me-2" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                <a class="text-decoration-none me-2" asp-area="" asp-controller="Home" asp-action="About">About</a>
+                <a class="text-decoration-none" asp-area="" asp-controller="Home" asp-action="Cart">Cart</a>
+            </div>
+            <div>
+                <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

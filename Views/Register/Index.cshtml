@@ -1,0 +1,48 @@
+﻿@model GlamourHub.Models.User
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h2 class="text-center">Register</h2>
+
+@if (ViewData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewData["ErrorMessage"]
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <form method="post">
+            <div class="form-group mb-2">
+                <label asp-for="Username">Username</label>
+                <input asp-for="Username" class="form-control" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Password">Password</label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group mb-2">
+                <label asp-for="Role">Role</label>
+                <select asp-for="Role" asp-items='new List<SelectListItem>
+                {
+                    new SelectListItem { Text = "-- Select Role --", Value = "" },
+                    new SelectListItem { Text = "Customer", Value = "Customer" },
+                    new SelectListItem { Text = "Seller", Value = "Seller" }
+                }' class="form-control"></select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <a class="text-decoration-none me-2" asp-area="" asp-controller="Login" asp-action="Index">Already registered? Login here</a>
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+    </div>
+    <div class="col-md-4"></div>
+</div>

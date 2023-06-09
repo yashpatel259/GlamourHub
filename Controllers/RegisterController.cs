@@ -17,25 +17,43 @@ namespace GlamourHub.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    string encodedPassword = EncodePasswordToBase64(user.Password);
+                    user.Password = encodedPassword;
+
                     using (var context = new GlamourHubContext())
                     {
                         context.Users.Add(user);
                         context.SaveChanges();
                     }
-
-                    // Redirect to a success page or perform any other desired action
-                    return RedirectToAction("Index", "Home");
+                    return View();
                 }
 
-                // If the form data is not valid, return the view with validation errors
+                // Validation errors exist, return the view with errors
                 return View(user);
-
             }
             catch (Exception ex)
             {
-                return null;
+                Console.WriteLine(ex.Message);
+                return View("Error");
             }
-            
         }
+
+
+        //this function Convert to Encord your Password
+        public static string EncodePasswordToBase64(string password)
+        {
+            try
+            {
+                byte[] encData_byte = new byte[password.Length];
+                encData_byte = System.Text.Encoding.UTF8.GetBytes(password);
+                string encodedData = Convert.ToBase64String(encData_byte);
+                return encodedData;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in base64Encode" + ex.Message);
+            }
+        }
+       
     }
 }

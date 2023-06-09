@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using GlamourHub.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GlamourHub.DataAccess
 {
@@ -8,5 +9,7 @@ namespace GlamourHub.DataAccess
         {
 
         }
+
+        public DbSet<User> Users { get; set; }
     }
 }

@@ -38,6 +38,8 @@ namespace GlamourHub.Controllers
                             // Start a new session
                             HttpContext.Session.Clear();
                             HttpContext.Session.SetString("Username", user.Username);
+                            HttpContext.Session.SetString("Role", user.Role);
+                            HttpContext.Session.SetString("Firstname", user.Firstname);
 
                             // Set session expiration time to 20 minutes
                             HttpContext.Session.SetString("ExpirationTime", DateTime.Now.AddMinutes(20).ToString());

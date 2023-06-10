@@ -2,7 +2,129 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <img src="~/images/sellBanner.png" alt="Sale Banner" class="img-fluid w-100">
-    <h1 class="display-4 fw-bold">Welcome to the Glamour hub</h1>
+<section id="hero-section" style="height: 100vh;">
+    <div class="hero-image">
+        <img src="~/images/sale gif.webp" alt="Hero Image" style="width: 100%; height: 80vh;">
+    </div>
+    <div class="container">
+        <div class="row pt-2">
+            <div class="col-md-12 text-center">
+                <h1 class="hero-heading">Welcome to <span class="first-letter">G</span>lamour <span class="first-letter">H</span>ub</h1>
+                <p>Explore our amazing collection of products in the World of Glamour!</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="image-slider">
+    <div id="NavigateIndicators" class="carousel slide" data-bs-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-bs-target="#NavigateIndicators" data-bs-slide-to="0" class="active"></li>
+            <li data-bs-target="#NavigateIndicators" data-bs-slide-to="1"></li>
+            <li data-bs-target="#NavigateIndicators" data-bs-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="~/images/slider3.jpg" class="d-block w-100" alt="Image 1">
+            </div>
+            <div class="carousel-item">
+                <img src="~/images/slider2.jpg" class="d-block w-100" alt="Image 2">
+            </div>
+            <div class="carousel-item">
+                <img src="~/images/slider1.jpg" class="d-block w-100" alt="Image 3">
+            </div>
+        </div>
+        <a class="carousel-control-prev" href="#NavigateIndicators" role="button" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#NavigateIndicators" role="button" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </a>
+    </div>
+</section>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Featured Products</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-6">
+                    <img class="img-fluid gallery-image" src="~/images/Black shorts1.jpg" alt="Gallery Image 1">
+                </div>
+                <div class="col-md-6">
+                    <img class="img-fluid gallery-image" src="~/images/brown tshirt1.jpg" alt="Gallery Image 2">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-6">
+                    <img class="img-fluid gallery-image" src="~/images/cap 2.jpg" alt="Gallery Image 3">
+                </div>
+                <div class="col-md-6">
+                    <img class="img-fluid gallery-image" src="~/images/Checked white tshirt 2.jpg" alt="Gallery Image 4">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Popular Products</h2>
+    <div class="row">
+        <div class="col-md-6 col-lg-3">
+            <div class="card product-card">
+                <img class="card-img-top" src="~/images/pink tees 2.jpg" alt="Product 1">
+                <div class="card-body">
+                    <h5 class="card-title">Pink T-shirt</h5>
+                    <p class="card-text">$19.99</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="button" class="btn btn-primary btn-sm btn-hover-effect">Add to Cart</button>
+                        <button type="button" class="btn btn-secondary btn-sm btn-hover-effect">Add to Wishlist</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card product-card">
+                <img class="card-img-top" src="~/images/lightgray&blue1.jpg" alt="Product 2">
+                <div class="card-body">
+                    <h5 class="card-title">Hoodie</h5>
+                    <p class="card-text">$24.99</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="button" class="btn btn-primary btn-sm btn-hover-effect">Add to Cart</button>
+                        <button type="button" class="btn btn-secondary btn-sm btn-hover-effect">Add to Wishlist</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card product-card">
+                <img class="card-img-top" src="~/images/pinktshirt1.jpg" alt="Product 3">
+                <div class="card-body">
+                    <h5 class="card-title">Polo T-shirt</h5>
+                    <p class="card-text">$24.99</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="button" class="btn btn-primary btn-sm btn-hover-effect">Add to Cart</button>
+                        <button type="button" class="btn btn-secondary btn-sm btn-hover-effect">Add to Wishlist</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card product-card">
+                <img class="card-img-top" src="~/images/cap 2.jpg" alt="Product 4">
+                <div class="card-body">
+                    <h5 class="card-title">Brink adjustable cap</h5>
+                    <p class="card-text">$24.99</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="button" class="btn btn-primary btn-sm btn-hover-effect">Add to Cart</button>
+                        <button type="button" class="btn btn-secondary btn-sm btn-hover-effect">Add to Wishlist</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

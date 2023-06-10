@@ -61,11 +61,11 @@ namespace GlamourHub.Controllers
         public IActionResult Logout()
         {
             HttpContext.Session.Clear(); // Clear the session
-            return RedirectToAction("Index", "Home"); // Redirect to the Home page or any other desired page
+            return RedirectToAction("Index", "Home"); // Redirect to the Home page 
         }
 
 
-        //this function Convert to Decord your Password
+        //this function Convert to Decord Password
 
         //public string DecodeFrom64(string encodedData)
         //{
@@ -79,7 +79,7 @@ namespace GlamourHub.Controllers
         //    return result;
         //}
 
-        //this function Convert to Encord your Password
+        //this function Convert to Encord Password
         public static string EncodePasswordToBase64(string password)
         {
             try

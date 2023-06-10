@@ -17,18 +17,37 @@ namespace GlamourHub.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    string encodedPassword = EncodePasswordToBase64(user.Password);
-                    user.Password = encodedPassword;
-
                     using (var context = new GlamourHubContext())
                     {
+                        // Check if email already exists
+                        bool isEmailRegistered = context.Users.Any(u => u.Email == user.Email);
+                        if (isEmailRegistered)
+                        {
+                            ModelState.AddModelError("Email", "You have already registered with this email.");
+                            return View(user);
+                        }
+
+                        // Check if username already exists
+                        bool isUsernameTaken = context.Users.Any(u => u.Username == user.Username);
+                        if (isUsernameTaken)
+                        {
+                            ModelState.AddModelError("Username", "Username is already taken.");
+                            return View(user);
+                        }                       
+
+                        // Encode password
+                        string encodedPassword = EncodePasswordToBase64(user.Password);
+                        user.Password = encodedPassword;
+
+                        // Save the user to the database
+                        user.CreatedAt = DateTime.Now;
                         context.Users.Add(user);
                         context.SaveChanges();
                     }
-                    return View();
+                    TempData["SuccessMessage"] = "You have registered successfully!";
+                    return View(user);
                 }
 
-                // Validation errors exist, return the view with errors
                 return View(user);
             }
             catch (Exception ex)
@@ -38,8 +57,7 @@ namespace GlamourHub.Controllers
             }
         }
 
-
-        //this function Convert to Encord your Password
+        //this function Convert to Encord Password
         public static string EncodePasswordToBase64(string password)
         {
             try

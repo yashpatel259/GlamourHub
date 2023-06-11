@@ -18,14 +18,6 @@ body {
     background: linear-gradient(to bottom, #ffffff,);
 }
 
-.hero-heading {
-    color: brown;
-}
-
-.first-letter {
-    color: rosybrown;
-}
-
 #image-slider {
     position: relative;
     height: 70vh;
@@ -71,12 +63,3 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-
-.btn-hover-effect {
-    transition: background-color 0.3s ease;
-}
-
-    .btn-hover-effect:hover {
-        background-color: darkblue;
-        color: #fff;
-    }

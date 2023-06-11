@@ -2963,9 +2963,9 @@ textarea.form-control-lg {
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #0d6efd;
-  border-color: #0d6efd;
+    color: #fff;
+    background-color: #951556;
+    border-color: #951556;
 }
 .btn-primary:hover {
   color: #fff;
@@ -2993,9 +2993,9 @@ textarea.form-control-lg {
 }
 
 .btn-secondary {
-  color: #fff;
-  background-color: #6c757d;
-  border-color: #6c757d;
+    color: #fff;
+    background-color: #E9B5D2;
+    border-color: #E9B5D2;
 }
 .btn-secondary:hover {
   color: #fff;

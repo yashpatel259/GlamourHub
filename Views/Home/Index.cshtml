@@ -2,21 +2,18 @@
     ViewData["Title"] = "Home Page";
 }
 
-<section id="hero-section" style="height: 100vh;">
-    <div class="hero-image">
-        <img src="~/images/sale gif.webp" alt="Hero Image" style="width: 100%; height: 80vh;">
-    </div>
-    <div class="container">
-        <div class="row pt-2">
-            <div class="col-md-12 text-center">
-                <h1 class="hero-heading">Welcome to <span class="first-letter">G</span>lamour <span class="first-letter">H</span>ub</h1>
-                <p>Explore our amazing collection of products in the World of Glamour!</p>
+<div class="container">
+    <div class="row pt-2">
+        <div class="col-md-12 text-center">
+            <img width="40%" height="65%" src="~/images/brand_lable.png" />
+            <div>
+                <img width="40%" height="65%" src="~/images/brand_tagline.png" />
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<section id="image-slider">
+<section class="pt-1" id="image-slider">
     <div id="NavigateIndicators" class="carousel slide" data-bs-ride="carousel">
         <ol class="carousel-indicators">
             <li data-bs-target="#NavigateIndicators" data-bs-slide-to="0" class="active"></li>
@@ -44,7 +41,11 @@
         </a>
     </div>
 </section>
-
+<section class="pt-1" id="hero-section">
+    <div class="hero-image">
+        <img src="~/images/sale gif.webp" alt="Hero Image" style="width: 100%; height: 80vh;">
+    </div>
+</section>
 <div class="container mt-4">
     <h2 class="text-center mb-4">Featured Products</h2>
     <div class="row">
@@ -120,8 +121,8 @@
                     <h5 class="card-title">Brink adjustable cap</h5>
                     <p class="card-text">$24.99</p>
                     <div class="d-flex justify-content-between align-items-center">
-                        <button type="button" class="btn btn-primary btn-sm btn-hover-effect">Add to Cart</button>
-                        <button type="button" class="btn btn-secondary btn-sm btn-hover-effect">Add to Wishlist</button>
+                        <button type="button" class="btn btn-primary btn-sm btn-hover">Add to Cart</button>
+                        <button type="button" class="btn btn-secondary btn-sm btn-hover">Add to Wishlist</button>
                     </div>
                 </div>
             </div>

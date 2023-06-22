@@ -1,0 +1,68 @@
+﻿@model GlamourHub.Models.User
+
+@{
+    ViewData["Title"] = "Add User";
+}
+
+@await Html.PartialAsync("_AdminNavbar")
+
+<h2 class="text-center">Add User</h2>
+
+@if (ViewData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewData["ErrorMessage"]
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        @using (Html.BeginForm("AddUser", "Admin", FormMethod.Post, new { @class = "needs-validation", @novalidate = "true" }))
+        {
+            <form method="post">
+                <div class="form-group mb-2">
+                    <label asp-for="Firstname">First Name</label>
+                    <input asp-for="Firstname" class="form-control" />
+                    <span asp-validation-for="Firstname" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label asp-for="Lastname">Last Name</label>
+                    <input asp-for="Lastname" class="form-control" />
+                    <span asp-validation-for="Lastname" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label asp-for="Email">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label asp-for="Username">Username</label>
+                    <input asp-for="Username" class="form-control" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label asp-for="Password">Password</label>
+                    <input asp-for="Password" type="password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label asp-for="Role">Role</label>
+                    <select asp-for="Role" asp-items='new List<SelectListItem>
+                {
+                    new SelectListItem { Text = "-- Select Role --", Value = "" },
+                    new SelectListItem { Text = "Customer", Value = "Customer" },
+                    new SelectListItem { Text = "Seller", Value = "Seller" }
+                }' class="form-control"></select>
+                    <span asp-validation-for="Role" class="text-danger"></span>
+                </div>
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                }
+                <button type="submit" class="btn btn-primary">Add User</button>
+            </form>
+        }
+    </div>
+    <div class="col-md-4"></div>
+</div>

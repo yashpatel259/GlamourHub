@@ -1,0 +1,19 @@
+﻿@model GlamourHub.Models.Category
+
+@{
+    ViewData["Title"] = "Delete Category";
+}
+@await Html.PartialAsync("_AdminNavbar")
+
+<h2 class="py-2">Confirm Delete</h2>
+
+<div class="alert alert-danger">
+    <p>Are you sure you want to delete the category "<strong>@Model.Name</strong>"?</p>
+</div>
+
+@using (Html.BeginForm("ConfirmDeleteCategory", "Category", FormMethod.Post))
+{
+    @Html.HiddenFor(model => model.Id)
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="CategoryList" class="btn btn-secondary">Cancel</a>
+}

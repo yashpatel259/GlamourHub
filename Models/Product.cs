@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GlamourHub.Models
@@ -14,14 +15,21 @@ namespace GlamourHub.Models
         }
 
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "Product name is required")]
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
+
+        [Required(ErrorMessage = "Price is required")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be a positive value")]
         public decimal Price { get; set; }
 
         [Column("category_id")]
+        [Required(ErrorMessage = "Pleace select category.")]
         public int? CategoryId { get; set; }
 
         [Column ("brand_id")]
+        [Required(ErrorMessage = "Pleace select brand.")]
         public int? BrandId { get; set; }
 
         [Column("created_at")]

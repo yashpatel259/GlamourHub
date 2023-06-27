@@ -1,0 +1,21 @@
+﻿@model GlamourHub.Models.Product
+
+@{
+    ViewData["Title"] = "Delete Product";
+}
+
+@await Html.PartialAsync("_AdminNavbar")
+
+<h2>Delete Product</h2>
+
+<div class="alert alert-warning">
+    <p>Are you sure you want to delete the following product?</p>
+    <p><strong>Name:</strong> @Model.Name</p>
+    <p><strong>Description:</strong> @Model.Description</p>
+</div>
+
+@using (Html.BeginForm("ConfirmDeleteProduct", "Product", FormMethod.Post))
+{
+    @Html.HiddenFor(model => model.Id)
+        <button type="submit" class="btn btn-danger">Delete</button>
+}

@@ -1,15 +1,17 @@
 ﻿@model GlamourHub.Models.Product
 
 @{
-    ViewData["Title"] = "Add Product";
+    ViewData["Title"] = "Edit Product";
 }
 
 @await Html.PartialAsync("_AdminNavbar")
 
-<h2>Add Product</h2>
+<h2>Edit Product</h2>
 
-@using (Html.BeginForm("AddProduct", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("EditProduct", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.HiddenFor(model => model.Id)
+
     <div class="form-group">
         <label for="name">Product Name</label>
         @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
@@ -30,21 +32,29 @@
 
     <div class="form-group">
         <label for="category">Category</label>
-        @Html.DropDownListFor(model => model.CategoryId, new SelectList(ViewBag.Categories, "Id", "Name"), "-- Select Category --", new { @class = "form-control" })
+        @Html.DropDownListFor(model => model.CategoryId, new SelectList(ViewBag.Categories, "Id", "Name", Model.CategoryId), "-- Select Category --", new { @class = "form-control" })
         @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
     </div>
 
     <div class="form-group">
         <label for="brand">Brand</label>
-        @Html.DropDownListFor(model => model.BrandId, new SelectList(ViewBag.Brands, "Id", "Name"), "-- Select Brand --", new { @class = "form-control" })
+        @Html.DropDownListFor(model => model.BrandId, new SelectList(ViewBag.Brands, "Id", "Name", Model.BrandId), "-- Select Brand --", new { @class = "form-control" })
         @Html.ValidationMessageFor(model => model.BrandId, "", new { @class = "text-danger" })
     </div>
+
 
     <div class="form-group">
         <label for="image">Image</label>
         <input type="file" name="imageFile" class="form-control-file" />
-        @Html.ValidationMessageFor(model => model.ImagePath, "", new { @class = "text-danger" })
     </div>
 
-    <button type="submit" class="btn btn-primary">Add</button>
+    <div class="form-group">
+        @if (!string.IsNullOrEmpty(Model.ImagePath))
+        {
+            <label>Current Image:</label>
+            <img src="~/images/@Model.ImagePath" alt="Product Image" class="img-thumbnail" style="max-width: 200px;" />
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
 }

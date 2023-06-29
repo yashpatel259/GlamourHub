@@ -4,7 +4,10 @@
     ViewData["Title"] = "Edit Product";
 }
 
-@await Html.PartialAsync("_AdminNavbar")
+@if (Context.Session.GetString("Role") == "Admin")
+{
+    @await Html.PartialAsync("_AdminNavbar")
+}
 
 <h2>Edit Product</h2>
 
@@ -12,49 +15,50 @@
 {
     @Html.HiddenFor(model => model.Id)
 
-    <div class="form-group">
-        <label for="name">Product Name</label>
+        <div class="form-group">
+            <label for="name">Product Name</label>
         @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
         @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-    </div>
+        </div>
 
-    <div class="form-group">
-        <label for="description">Description</label>
+        <div class="form-group">
+            <label for="description">Description</label>
         @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
         @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-    </div>
+        </div>
 
-    <div class="form-group">
-        <label for="price">Price</label>
+        <div class="form-group">
+            <label for="price">Price</label>
         @Html.TextBoxFor(model => model.Price, new { @class = "form-control" })
         @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
-    </div>
+        </div>
 
-    <div class="form-group">
-        <label for="category">Category</label>
-        @Html.DropDownListFor(model => model.CategoryId, new SelectList(ViewBag.Categories, "Id", "Name", Model.CategoryId), "-- Select Category --", new { @class = "form-control" })
+            <div class="form-group">
+            <label for="category">Category</label>
+        @Html.DropDownListFor(model => model.CategoryId, (SelectList)ViewBag.Categories, new { @class = "form-control" })
         @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
-    </div>
+        </div>
 
-    <div class="form-group">
-        <label for="brand">Brand</label>
-        @Html.DropDownListFor(model => model.BrandId, new SelectList(ViewBag.Brands, "Id", "Name", Model.BrandId), "-- Select Brand --", new { @class = "form-control" })
+        <div class="form-group">
+            <label for="brand">Brand</label>
+        @Html.DropDownListFor(model => model.BrandId, (SelectList)ViewBag.Brands, new { @class = "form-control" })
         @Html.ValidationMessageFor(model => model.BrandId, "", new { @class = "text-danger" })
-    </div>
+        </div>
 
+            <div class="form-group">
+            <label for="image">Image</label>
+            <input type="file" name="newImage" class="form-control-file" />
+        </div>
 
-    <div class="form-group">
-        <label for="image">Image</label>
-        <input type="file" name="imageFile" class="form-control-file" />
-    </div>
-
-    <div class="form-group">
+        <div class="form-group">
         @if (!string.IsNullOrEmpty(Model.ImagePath))
         {
-            <label>Current Image:</label>
-            <img src="~/images/@Model.ImagePath" alt="Product Image" class="img-thumbnail" style="max-width: 200px;" />
-        }
-    </div>
+                    <label>Current Image:</label>
+                    <img src="~/images/@Model.ImagePath" alt="Product Image" class="img-thumbnail" style="max-width: 200px;" />
 
-    <button type="submit" class="btn btn-primary">Save</button>
+            @Html.ValidationMessageFor(model => model.ImagePath, "", new { @class = "text-danger" })
+        }
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
 }

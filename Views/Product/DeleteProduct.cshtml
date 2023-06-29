@@ -4,7 +4,10 @@
     ViewData["Title"] = "Delete Product";
 }
 
-@await Html.PartialAsync("_AdminNavbar")
+@if (Context.Session.GetString("Role") == "Admin")
+{
+    @await Html.PartialAsync("_AdminNavbar")
+}
 
 <h2>Delete Product</h2>
 

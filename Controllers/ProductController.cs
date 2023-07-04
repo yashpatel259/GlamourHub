@@ -253,8 +253,14 @@ namespace GlamourHub.Controllers
 
         // POST
         [HttpPost]
-        public IActionResult EditProduct(Product product, IFormFile newImage)
+        public IActionResult EditProduct(Product product, IFormFile? strImage)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                // Inspect the errors and debug the issue
+            }
+
             if (ModelState.IsValid)
             {
                 Product existingProduct = _dbContext.Products.Find(product.Id);
@@ -264,7 +270,7 @@ namespace GlamourHub.Controllers
                 }
 
                 // Delete the old image file if a new image is uploaded
-                if (newImage != null)
+                if (strImage != null)
                 {
                     if (!string.IsNullOrEmpty(existingProduct.ImagePath))
                     {
@@ -277,9 +283,9 @@ namespace GlamourHub.Controllers
 
                     // Save the new image file
                     string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(newImage.FileName);
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(strImage.FileName);
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    newImage.CopyTo(new FileStream(filePath, FileMode.Create));
+                    strImage.CopyTo(new FileStream(filePath, FileMode.Create));
                     product.ImagePath = uniqueFileName;
                 }
                 else

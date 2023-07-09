@@ -1,0 +1,44 @@
+﻿@model GlamourHub.Models.Product
+
+<div class="container">
+    <div class="row mt-3">
+        <div class="col-lg-6">
+            <img src="@Url.Content("~/images/" + Model.ImagePath)" alt="Product Image" class="img-fluid" style="max-height: 65%">
+        </div>
+        <div class="col-lg-6">
+            <h1>@Model.Name</h1>
+            <p>@Model.Description</p>
+            <p>Price: $@Model.Price</p>
+            <p>Category: @Model.Category?.Name</p>
+            <p>Brand: @Model.Brand?.Name</p>
+
+            <form action="/Cart/AddToCart" method="post">
+                <input type="hidden" name="productId" value="@Model.Id" />
+
+                <div class="input-group mb-3">
+                    <span class="input-group-prepend">
+                        <button type="button" class="btn btn-outline-secondary" onclick="decreaseQuantity()">-</button>
+                    </span>
+                    <input type="number" id="quantityInput" name="quantity" value="1" class="form-control mx-2" style="max-width: 50px;" min="1" max="10" />
+                    <span class="input-group-append">
+                        <button type="button" class="btn btn-outline-secondary" onclick="increaseQuantity()">+</button>
+                    </span>
+                </div>
+
+                <input type="submit" value="Add to Cart" class="btn btn-primary" />
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function increaseQuantity() {
+        var quantityInput = document.getElementById('quantityInput');
+        quantityInput.stepUp();
+    }
+
+    function decreaseQuantity() {
+        var quantityInput = document.getElementById('quantityInput');
+        quantityInput.stepDown();
+    }
+</script>

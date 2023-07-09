@@ -145,9 +145,9 @@ namespace GlamourHub.Models
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.CreatedAt)
+                entity.Property(e => e.OrderDate)
                     .HasColumnType("datetime")
-                    .HasColumnName("created_at")
+                    .HasColumnName("OrderDate")
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");

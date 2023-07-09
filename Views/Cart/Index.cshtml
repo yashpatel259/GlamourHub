@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<div class="container">
+    <h1>Shopping Cart</h1>
+
+    @if (Model.Count == 0)
+    {
+        <p>Your cart is empty.</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@(item.Product?.Name)</td>
+                        <td>@(item.Product?.Price)</td>
+                        <td>@item.Quantity</td>
+                        <td>
+                            <form action="/Cart/RemoveFromCart" method="post">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <button type="submit" class="btn btn-danger">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    }
+
+    <a href="/Product/Shop" class="btn btn-primary">Continue Shopping</a>
+    <a href="/Cart/Checkout" class="btn btn-success">Checkout</a>
+</div>

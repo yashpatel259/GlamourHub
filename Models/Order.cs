@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GlamourHub.Models
 {
@@ -11,10 +12,17 @@ namespace GlamourHub.Models
         }
 
         public int Id { get; set; }
-        public int? UserId { get; set; }
-        public DateTime? CreatedAt { get; set; }
 
-        public virtual User? User { get; set; }
+        [Column("user_id")]
+        public int? UserId { get; set; }
+
+        [Column("TotalAmount")]
+        public decimal TotalAmount { get; set; }
+
+        [Column("OrderDate")]
+        public DateTime OrderDate { get; set; }
+
+        public virtual User User { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
     }
 }

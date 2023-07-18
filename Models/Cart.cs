@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GlamourHub.Models
 {
+    [Authorize]
     public partial class Cart
     {
         public int Id { get; set; }

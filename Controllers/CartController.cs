@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using GlamourHub.Models;
 using GlamourHub.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GlamourHub.Controllers
 {
+  
     public class CartController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
@@ -20,13 +22,19 @@ namespace GlamourHub.Controllers
         // GET: /Cart
         public IActionResult Index()
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             var cart = GetCartItems();
             return View(cart);
         }
 
         // POST: /Cart/AddToCart
         [HttpPost]
-        public IActionResult AddToCart(int productId)
+        public IActionResult AddToCart(int productId,int quantity)
         {
             var product = _dbContext.Products.Find(productId);
             if (product == null)
@@ -39,14 +47,14 @@ namespace GlamourHub.Controllers
             var existingItem = cart.FirstOrDefault(item => item.ProductId == productId);
             if (existingItem != null)
             {
-                existingItem.Quantity++;
+                existingItem.Quantity = existingItem.Quantity+ quantity;
             }
             else
             {
                 var newItem = new Cart
                 {
                     ProductId = product.Id,
-                    Quantity = 1
+                    Quantity = quantity
                 };
                 cart.Add(newItem);
             }
@@ -76,6 +84,12 @@ namespace GlamourHub.Controllers
         // GET: /Cart/Checkout
         public IActionResult Checkout()
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             var cart = GetCartItems();
             var userId = GetUserId();
 
@@ -110,7 +124,6 @@ namespace GlamourHub.Controllers
             var userId = GetUserId();
             return _dbContext.Cart.Include(cart => cart.Product).Where(cart => cart.UserId == userId).ToList();
         }
-
 
         private void SaveCartItems(List<Cart> cart)
         {
@@ -148,6 +161,12 @@ namespace GlamourHub.Controllers
 
         public IActionResult ThankYou()
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             // Clear the cart
             ClearCart();
             return View();
@@ -173,6 +192,11 @@ namespace GlamourHub.Controllers
             var cart = _dbContext.Cart.Where(cart => cart.UserId == userId);
             _dbContext.Cart.RemoveRange(cart);
             _dbContext.SaveChanges();
+        }
+
+        public bool ValidateRole()
+        {
+            return HttpContext.Session.GetString("Role") == "Customer" || HttpContext.Session.GetString("Role") == "Admin" || HttpContext.Session.GetString("Role") == "Seller" ? true : false;
         }
     }
 }

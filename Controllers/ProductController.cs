@@ -7,6 +7,7 @@ using GlamourHub.Models;
 using GlamourHub.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GlamourHub.Controllers
 {
@@ -23,7 +24,13 @@ namespace GlamourHub.Controllers
 
         // GET
         public IActionResult AddProduct()
-        {
+        { 
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             ViewBag.Categories = _dbContext.Categories; // Pass categories to the view for dropdown
             ViewBag.Brands = _dbContext.Brands; // Pass brands to the view for dropdown
             return View();
@@ -59,6 +66,12 @@ namespace GlamourHub.Controllers
         // GET
         public IActionResult EditProduct(int id)
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             Product existingProduct = _dbContext.Products.Find(id);
             if (existingProduct == null)
             {
@@ -136,6 +149,12 @@ namespace GlamourHub.Controllers
         // GET
         public IActionResult DeleteProduct(int id)
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             Product existingProduct = _dbContext.Products.Find(id);
             if (existingProduct == null)
             {
@@ -173,6 +192,12 @@ namespace GlamourHub.Controllers
         // GET
         public IActionResult ProductList()
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             var productList = _dbContext.Products
                 .Include(p => p.Category)
                 .Include(p => p.Brand)
@@ -181,6 +206,7 @@ namespace GlamourHub.Controllers
             return View(productList);
         }
 
+        [AllowAnonymous]
         public IActionResult Shop()
         {
             var Shop = _dbContext.Products
@@ -192,6 +218,7 @@ namespace GlamourHub.Controllers
         }
 
         // GET: /Product/Details/{id}
+        [AllowAnonymous]
         public IActionResult ProductDetails(int id)
         {
             var product = _dbContext.Products
@@ -205,6 +232,11 @@ namespace GlamourHub.Controllers
             }
 
             return View(product);
+        }
+
+        public bool ValidateRole()
+        {
+            return HttpContext.Session.GetString("Role") == "Admin" || HttpContext.Session.GetString("Role") == "Seller" ? true : false;
         }
     }
 }

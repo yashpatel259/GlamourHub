@@ -2,9 +2,12 @@
 using GlamourHub.Models;
 using System.Collections.Generic;
 using GlamourHub.DataAccess;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace GlamourHub.Controllers
 {
+    
     public class AdminController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
@@ -16,20 +19,39 @@ namespace GlamourHub.Controllers
 
         public IActionResult Index()
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             return View();
         }
 
         [HttpGet]
         public IActionResult UserList()
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             IEnumerable<User> user = _dbContext.Users;
 
             return View(user);
         }
 
+
         [HttpGet]
         public IActionResult AddUser()
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             return View();
         }
 
@@ -99,6 +121,12 @@ namespace GlamourHub.Controllers
         [HttpGet]
         public IActionResult EditUser(int id)
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             User existingUser = _dbContext.Users.Find(id);
             if (existingUser == null)
             {
@@ -152,6 +180,12 @@ namespace GlamourHub.Controllers
         [HttpGet]
         public IActionResult DeleteUser(int id)
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             User existingUser = _dbContext.Users.Find(id);
             if (existingUser == null)
             {
@@ -174,6 +208,11 @@ namespace GlamourHub.Controllers
             _dbContext.SaveChanges();
 
             return RedirectToAction("UserList");
+        }
+
+        public bool ValidateRole()
+        {
+            return HttpContext.Session.GetString("Role") == "Admin" ? true : false;
         }
 
     }

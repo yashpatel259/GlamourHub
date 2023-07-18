@@ -1,7 +1,9 @@
 ﻿using System.Linq;
 using GlamourHub.DataAccess;
 using GlamourHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 
 public class BrandController : Controller
 {
@@ -14,6 +16,12 @@ public class BrandController : Controller
 
     public IActionResult BrandList()
     {
+        // Check if session data exists
+        if (!ValidateRole())
+        {
+            // Redirect to login page if session data is missing
+            return RedirectToAction("Index", "Login");
+        }
         var brands = _dbContext.Brands.ToList();
         return View(brands);
     }
@@ -21,6 +29,12 @@ public class BrandController : Controller
     [HttpGet]
     public IActionResult AddBrand()
     {
+        // Check if session data exists
+        if (!ValidateRole())
+        {
+            // Redirect to login page if session data is missing
+            return RedirectToAction("Index", "Login");
+        }
         return View();
     }
 
@@ -49,6 +63,13 @@ public class BrandController : Controller
     [HttpGet]
     public IActionResult EditBrand(int id)
     {
+        // Check if session data exists
+        if (!ValidateRole())
+        {
+            // Redirect to login page if session data is missing
+            return RedirectToAction("Index", "Login");
+        }
+
         Brand existingBrand = _dbContext.Brands.Find(id);
         if (existingBrand == null)
         {
@@ -81,6 +102,12 @@ public class BrandController : Controller
     [HttpGet]
     public IActionResult DeleteBrand(int id)
     {
+        // Check if session data exists
+        if (!ValidateRole())
+        {
+            // Redirect to login page if session data is missing
+            return RedirectToAction("Index", "Login");
+        }
         Brand existingBrand = _dbContext.Brands.Find(id);
         if (existingBrand == null)
         {
@@ -103,5 +130,10 @@ public class BrandController : Controller
         _dbContext.SaveChanges();
 
         return RedirectToAction("BrandList");
+    }
+
+    public bool ValidateRole()
+    {
+        return HttpContext.Session.GetString("Role") == "Admin" ? true : false;
     }
 }

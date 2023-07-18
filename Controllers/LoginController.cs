@@ -3,6 +3,7 @@ using GlamourHub.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.Design;
+using Microsoft.AspNetCore.Identity;
 
 namespace GlamourHub.Controllers
 {
@@ -25,7 +26,7 @@ namespace GlamourHub.Controllers
 
                     var UsernameE = model.Username;
                     var PasswordE = model.Password;
-                    
+
 
                     var user = context.Users.FirstOrDefault(store => store.Username == UsernameE);
 
@@ -96,5 +97,5 @@ namespace GlamourHub.Controllers
                 throw new Exception("Error in base64Encode" + ex.Message);
             }
         }
-    }    
+    }
 }

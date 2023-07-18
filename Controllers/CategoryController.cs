@@ -1,9 +1,11 @@
 ﻿using GlamourHub.DataAccess;
 using GlamourHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GlamourHub.Controllers
 {
+    
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
@@ -19,6 +21,12 @@ namespace GlamourHub.Controllers
 
         public IActionResult CategoryList()
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             IEnumerable<Category> category = _dbContext.Categories;
 
             return View(category);
@@ -27,6 +35,12 @@ namespace GlamourHub.Controllers
         [HttpGet]
         public IActionResult AddCategory()
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             return View();
         }
 
@@ -57,6 +71,12 @@ namespace GlamourHub.Controllers
         [HttpGet]
         public IActionResult EditCategory(int id)
         {
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
             // Retrieve the existing category from the database
             Category existingCategory = _dbContext.Categories.Find(id);
             if (existingCategory == null)
@@ -142,6 +162,11 @@ namespace GlamourHub.Controllers
 
         //    return RedirectToAction("CategoryList");
         //}
+
+        public bool ValidateRole()
+        {
+            return HttpContext.Session.GetString("Role") == "Admin" ? true : false;
+        }
 
     }
 }

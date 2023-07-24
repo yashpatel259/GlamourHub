@@ -38,6 +38,12 @@ namespace GlamourHub.Models
         [Column ("image_path")]
         public string? ImagePath { get; set; }
 
+        public bool IsSale { get; set; }
+
+        [Required(ErrorMessage = "Quantity is required")]
+        [Range(0, int.MaxValue, ErrorMessage = "Quantity must be a non-negative value")]
+        public int StockQuantity { get; set; }
+
         public virtual Brand? Brand { get; set; }
         public virtual Category? Category { get; set; }
         public virtual ICollection<Cart> Carts { get; set; }

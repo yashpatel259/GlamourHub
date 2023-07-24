@@ -81,43 +81,7 @@ namespace GlamourHub.Controllers
             return RedirectToAction("Index", "Cart");
         }
 
-        // GET: /Cart/Checkout
-        public IActionResult Checkout()
-        {
-            // Check if session data exists
-            if (!ValidateRole())
-            {
-                // Redirect to login page if session data is missing
-                return RedirectToAction("Index", "Login");
-            }
-            var cart = GetCartItems();
-            var userId = GetUserId();
-
-            // Create an order for the user
-            var order = new Order
-            {
-                UserId = userId,
-                OrderDate = DateTime.Now,
-                //TotalAmount = cart.Sum(item => item.Product.Price * item.Quantity),
-                OrderItems = cart.Select(item => new OrderItem
-                {
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity,
-                    Price = item.Product.Price
-                }).ToList()
-            };
-
-            // Save the order to the database
-            _dbContext.Orders.Add(order);
-            _dbContext.SaveChanges();
-
-            // Clear the cart
-            //ClearCart();
-
-            // Optionally, you can redirect to a confirmation page or display a success message
-            //return RedirectToAction("Checkout", "Cart");
-            return View(cart);
-        }
+       
 
         private List<Cart> GetCartItems()
         {
@@ -157,19 +121,6 @@ namespace GlamourHub.Controllers
             }
 
             _dbContext.SaveChanges();
-        }
-
-        public IActionResult ThankYou()
-        {
-            // Check if session data exists
-            if (!ValidateRole())
-            {
-                // Redirect to login page if session data is missing
-                return RedirectToAction("Index", "Login");
-            }
-            // Clear the cart
-            ClearCart();
-            return View();
         }
 
         private int GetUserId()

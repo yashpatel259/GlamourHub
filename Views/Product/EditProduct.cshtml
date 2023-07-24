@@ -35,6 +35,12 @@
             </div>
 
             <div class="form-group mb-2">
+                <label for="stockQuantity">Stock Quantity</label>
+                @Html.TextBoxFor(model => model.StockQuantity, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.StockQuantity, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group mb-2">
                 <label for="category">Category</label>
                 @Html.DropDownListFor(model => model.CategoryId, (SelectList)ViewBag.Categories, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
@@ -45,9 +51,21 @@
                 @Html.DropDownListFor(model => model.BrandId, (SelectList)ViewBag.Brands, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.BrandId, "", new { @class = "text-danger" })
             </div>
+
+            <div class="form-group mb-2">
+                <label for="isSale">Is Sale</label><br>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(model => model.IsSale, true, new { @class = "form-check-input", id = "isSaleOn" })
+                    <label class="form-check-label">On Sale</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    @Html.RadioButtonFor(model => model.IsSale, false, new { @class = "form-check-input", id = "isSaleOff" })
+                    <label class="form-check-label">Off Sale</label>
+                </div>
+            </div>
         </div>
 
-        
+
         <div class="col-md-1"></div>
 
         <div class="col-md-3">
@@ -67,3 +85,14 @@
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 }
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var isSale = @(Model.IsSale.ToString().ToLower());
+        if (isSale) {
+            document.getElementById("isSaleOn").checked = true;
+        } else {
+            document.getElementById("isSaleOff").checked = true;
+        }
+    });
+</script>

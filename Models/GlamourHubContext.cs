@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GlamourHub.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -43,39 +44,31 @@ namespace GlamourHub.Models
                 entity.ToTable("addresses");
 
                 entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.City)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("city");
-
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasColumnName("created_at")
-                    .HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.PostalCode)
-                    .HasMaxLength(20)
-                    .IsUnicode(false)
-                    .HasColumnName("postal_code");
-
-                entity.Property(e => e.State)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("state");
-
-                entity.Property(e => e.Street)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("street");
-
                 entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+
+                // Billing address properties
+                entity.Property(e => e.BillingFirstName).HasColumnName("billing_first_name");
+                entity.Property(e => e.BillingLastName).HasColumnName("billing_last_name");
+                entity.Property(e => e.BillingStreet).HasColumnName("billing_street");
+                entity.Property(e => e.BillingCity).HasColumnName("billing_city");
+                entity.Property(e => e.BillingState).HasColumnName("billing_state");
+                entity.Property(e => e.BillingPostalCode).HasColumnName("billing_postal_code");
+
+                // Shipping address properties
+                entity.Property(e => e.ShippingFirstName).HasColumnName("shipping_first_name");
+                entity.Property(e => e.ShippingLastName).HasColumnName("shipping_last_name");
+                entity.Property(e => e.ShippingStreet).HasColumnName("shipping_street");
+                entity.Property(e => e.ShippingCity).HasColumnName("shipping_city");
+                entity.Property(e => e.ShippingState).HasColumnName("shipping_state");
+                entity.Property(e => e.ShippingPostalCode).HasColumnName("shipping_postal_code");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Addresses)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__addresses__user___4222D4EF");
             });
+
 
             modelBuilder.Entity<Brand>(entity =>
             {

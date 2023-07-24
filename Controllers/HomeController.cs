@@ -1,22 +1,32 @@
-﻿using GlamourHub.Models;
+﻿using GlamourHub.DataAccess;
+using GlamourHub.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace GlamourHub.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ApplicationDbContext _dbContext;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext dbContext)
         {
             _logger = logger;
+            _dbContext = dbContext;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var productList = _dbContext.Products
+                 .Include(p => p.Category)
+                 .Include(p => p.Brand)
+                 .ToList();
+
+            return View(productList);
         }
+
 
         public IActionResult Privacy()
         {

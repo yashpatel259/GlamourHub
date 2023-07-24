@@ -134,7 +134,8 @@ namespace GlamourHub.Controllers
                 existingProduct.Price = product.Price;
                 existingProduct.CategoryId = product.CategoryId;
                 existingProduct.BrandId = product.BrandId;
-
+                existingProduct.IsSale = product.IsSale;
+                existingProduct.StockQuantity = product.StockQuantity;
                 _dbContext.SaveChanges();
 
                 return RedirectToAction("ProductList");

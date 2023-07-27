@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 public class BrandController : Controller
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly GlamourHubContext _dbContext;
 
-    public BrandController(ApplicationDbContext dbContext)
+    public BrandController(GlamourHubContext dbContext)
     {
         _dbContext = dbContext;
     }

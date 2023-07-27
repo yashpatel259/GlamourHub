@@ -10,9 +10,9 @@ namespace GlamourHub.Controllers
     
     public class AdminController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly GlamourHubContext _dbContext;
 
-        public AdminController(ApplicationDbContext dbContext)
+        public AdminController(GlamourHubContext dbContext)
         {
             _dbContext = dbContext;
         }

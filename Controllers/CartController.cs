@@ -12,9 +12,9 @@ namespace GlamourHub.Controllers
   
     public class CartController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly GlamourHubContext _dbContext;
 
-        public CartController(ApplicationDbContext dbContext)
+        public CartController(GlamourHubContext dbContext)
         {
             _dbContext = dbContext;
         }

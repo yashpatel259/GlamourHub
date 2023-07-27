@@ -1,0 +1,27 @@
+﻿@model List<GlamourHub.Models.Product>
+
+<div class="row my-2">
+    @if (Model.Any())
+    {
+        @foreach (var product in Model)
+        {
+            <div class="col-md-3 p-2">
+                <a href="/Product/ProductDetails/@product.Id" class="card-link">
+                    <div class="card mb-3">
+                        <img src="@Url.Content("~/images/" + product.ImagePath)" class="card-img-top product-img" alt="Product Image">
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text">Price: @product.Price</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-md-12 text-center">
+            <p class="font-weight-bold m-5" style="font-size: 24px;">Sorry, no products found.</p>
+        </div>
+    }
+</div>

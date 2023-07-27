@@ -14,9 +14,9 @@ namespace GlamourHub.Controllers
     public class ProductController : Controller
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly GlamourHubContext _dbContext;
 
-        public ProductController(IWebHostEnvironment webHostEnvironment, ApplicationDbContext dbContext)
+        public ProductController(IWebHostEnvironment webHostEnvironment, GlamourHubContext dbContext)
         {
             _webHostEnvironment = webHostEnvironment;
             _dbContext = dbContext;

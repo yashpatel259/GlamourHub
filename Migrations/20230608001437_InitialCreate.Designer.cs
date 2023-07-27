@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GlamourHub.Migrations
 {
-    [DbContext(typeof(GlamourHubContext))]
+    //[DbContext(typeof(GlamourHubContext))]
     [Migration("20230608001437_InitialCreate")]
     partial class InitialCreate
     {

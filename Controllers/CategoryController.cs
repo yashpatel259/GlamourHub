@@ -8,9 +8,9 @@ namespace GlamourHub.Controllers
     
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly GlamourHubContext _dbContext;
 
-        public CategoryController(ApplicationDbContext dbContext)
+        public CategoryController(GlamourHubContext dbContext)
         {
             _dbContext = dbContext;
         }

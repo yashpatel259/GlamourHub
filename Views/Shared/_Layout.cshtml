@@ -29,9 +29,6 @@
                             <a class="btn nav-link text-decoration-none me-2" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn nav-link text-decoration-none me-2" asp-area="" asp-controller="Home" asp-action="Index">About</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="btn nav-link text-decoration-none me-2" asp-area="" asp-controller="Product" asp-action="Shop">Shop</a>
                         </li>
                         @if (Context.Session.GetString("Role") == "Admin")
@@ -45,13 +42,19 @@
                             <li class="nav-item">
                                 <a class="btn nav-link text-decoration-none me-2" asp-area="" asp-controller="Product" asp-action="ProductList">Manage Products</a>
                             </li>
-                           
+
                         }
                     </ul>
                     <div class="d-flex align-items-center flex-column flex-sm-row">
-                        <form class="d-flex mb-2 mb-sm-0">
-                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                            <button class="btn btn-outline-secondary" type="submit">Search</button>
+                        <form action="/SearchItems/SearchItems" method="get" class="d-flex mb-2 mb-sm-0">
+                            <div class="input-group">
+                                <div class="form-outline">
+                                    <input type="text" id="search-autocomplete" class="form-control me-2" id="searchQuery" name="searchQuery" placeholder="Search">
+                                </div>
+                                <button type="submit" class="btn btn-outline-secondary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                         </form>
                         <div class="d-flex mt-2 mt-sm-0 navbar-nav">
                             @if (Context.Session.GetString("Username") != null)

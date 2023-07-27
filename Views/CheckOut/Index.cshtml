@@ -2,201 +2,144 @@
 @{
     ViewData["Title"] = "Checkout";
 
-    decimal totalAmount = 0;
-    decimal taxAmount = 0;
-    decimal deliveryAmount = 0;
-    decimal grandTotal = 0;
-    bool isFreeShipping = false;
-
-    if (Model.CartItems != null && Model.CartItems.Any())
-    {
-        totalAmount = Model.CartItems.Sum(item => item.Product.Price * item.Quantity);
-        decimal taxRate = 0.13m; // 13% tax rate
-        decimal deliveryRate = 0.05m; // 5% delivery rate
-        taxAmount = totalAmount * taxRate;
-        deliveryAmount = totalAmount < 50 ? totalAmount * deliveryRate : 0;
-        grandTotal = totalAmount + taxAmount + deliveryAmount;
-        isFreeShipping = totalAmount > 50 && deliveryAmount <= 0;
-    }
-    else
-    {
-        <p>Your cart is empty.</p>
-    }
+    decimal totalAmount = Model.TotalAmount;
+    decimal taxAmount = Model.TaxAmount;
+    decimal deliveryAmount = Model.DeliveryAmount;
+    decimal grandTotal = Model.GrandTotal;
+    bool isFreeShipping = Model.IsFreeShipping;
 }
 
-
-<h2>Checkout</h2>
-
-<!-- Display the cart items and order summary -->
-@if (Model.CartItems != null && Model.CartItems.Any())
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.CartItems)
-            {
-                <tr>
-                    <td>@(item.Product?.Name)</td>
-                    <td>@(item.Product?.Price)</td>
-                    <td>@item.Quantity</td>
-                    <td>@(item.Product?.Price * item.Quantity)</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>Your cart is empty.</p>
-}
-
-
-<p>Total:@totalAmount</p>
-<p>Tax (13%): @taxAmount</p>
-<p>
-    <span>Delivery Charges (5%): @deliveryAmount</span>
-    @if (isFreeShipping)
-    {
-        <span class="text-success">
-            *Your order qualifies for free shipping!
-        </span>
-    }
-    else
-    {
-        <span class="text-danger">
-            *Spend $50 or more to qualify for free shipping!
-        </span>
-    }
-</p>
-<p>Grand Total:<strong> @grandTotal</strong></p>
+<h2 class="container text-center m-3">Checkout</h2>
 
 <div class="container">
     <form action="/CheckOut/CompleteOrder" method="post">
         <div class="row justify-content-center my-md-2">
             <div class="col-md-6">
-                <h2>Billing Address</h2>
-                <div class="form-row mt-md-5">
+                <h3 class="container text-center">Shipping Address</h3>
+                <input type="hidden" name="CartItemsJson" value='@Json.Serialize(Model.CartItems)' />
+
+                <div class="form-row">
                     <div class="form-group">
-                        <label for="firstName">First Name</label>
-                        <input type="text" class="form-control" id="firstName" name="firstName">
-                        @Html.ValidationMessageFor(m => m.BillingFirstName)
+                        <label for="FirstName">First Name</label>
+                        <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.FirstName">
+                        @Html.ValidationMessageFor(m => m.FirstName)
                     </div>
                     <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" class="form-control" id="lastName" name="lastName">
-                        @Html.ValidationMessageFor(m => m.BillingLastName)
+                        <label for="LastName">Last Name</label>
+                        <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.LastName">
+                        @Html.ValidationMessageFor(m => m.LastName)
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="address">Address</label>
-                    <input type="text" class="form-control" id="address" name="address">
-                    @Html.ValidationMessageFor(m => m.BillingStreet)
+                    <label for="Phone">Phone</label>
+                    <input type="text" class="form-control" id="Phone" name="Phone" value="@Model.Phone">
+                    @Html.ValidationMessageFor(m => m.Phone)
+                </div>
+                <div class="form-group">
+                    <label for="Address">Street Address</label>
+                    <input type="text" class="form-control" id="Street" name="Street" value="@Model.Street">
+                    @Html.ValidationMessageFor(m => m.Street)
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="city">City</label>
-                        <input type="text" class="form-control" id="city" name="city">
-                        @Html.ValidationMessageFor(m => m.BillingCity)
+                        <label for="City">City</label>
+                        <input type="text" class="form-control" id="City" name="City" value="@Model.City">
+                        @Html.ValidationMessageFor(m => m.City)
                     </div>
                     <div class="form-group">
-                        <label for="state">State/Province</label>
-                        <input type="text" class="form-control" id="state" name="state">
-                        @Html.ValidationMessageFor(m => m.BillingState)
+                        <label for="State">State/Province</label>
+                        <input type="text" class="form-control" id="State" name="State" value="@Model.State">
+                        @Html.ValidationMessageFor(m => m.State)
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="postalCode">Postal Code</label>
-                        <input type="text" class="form-control" id="postalCode" name="postalCode">
-                        @Html.ValidationMessageFor(m => m.BillingPostalCode)
+                        <label for="PostalCode">Postal Code</label>
+                        <input type="text" class="form-control" id="PostalCode" name="PostalCode" value="@Model.PostalCode">
+                        @Html.ValidationMessageFor(m => m.PostalCode)
                     </div>
                     <div class="form-group">
-                        <label for="country">Country</label>
-                        <input type="text" class="form-control" id="country" name="country">
-                        @Html.ValidationMessageFor(m => m.BillingCountry)
+                        <label for="Country">Country</label>
+                        <input type="text" class="form-control" id="Country" name="Country" value="@Model.Country">
+                        @Html.ValidationMessageFor(m => m.Country)
                     </div>
                 </div>
             </div>
             <div class="col-md-6">
-                <h2>Shipping Address</h2>
-                <div class="form-group mt-4 ">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="sameAsBilling" name="sameAsBilling">
-                        <label class="form-check-label" for="sameAsBilling">
-                            Same as Billing Address
-                        </label>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="shippingFirstName">First Name</label>
-                        <input type="text" class="form-control" id="shippingFirstName" name="shippingFirstName">
-                        @Html.ValidationMessageFor(m => m.ShippingFirstName)
-                    </div>
-                    <div class="form-group">
-                        <label for="shippingLastName">Last Name</label>
-                        <input type="text" class="form-control" id="shippingLastName" name="shippingLastName">
-                        @Html.ValidationMessageFor(m => m.ShippingLastName)
-                    </div>
+                <h3 class="container text-center">Order Summary</h3>
+                <!-- Display the cart items and order summary -->
+                @if (Model.CartItems != null && Model.CartItems.Any())
+                {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.CartItems)
+                            {
+                                <tr>
+                                    <td>@(item.Product?.Name)</td>
+                                    <td>@(item.Product?.Price)</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@(item.Product?.Price * item.Quantity)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>Your cart is empty.</p>
+                }
+
+                <p>Total: @totalAmount.ToString("0.00")</p>
+                <p>Tax (13%): @taxAmount.ToString("0.00")</p>
+                <p>
+                    <span>Delivery Charges (5%): @deliveryAmount.ToString("0.00")</span>
+                    @if (isFreeShipping)
+                    {
+                        <span class="text-success">
+                            *Your order qualifies for free shipping!
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="text-danger">
+                            *Spend $50 or more to qualify for free shipping!
+                        </span>
+                    }
+                </p>
+                <p>Grand Total:<strong> @grandTotal.ToString("0.00")</strong></p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h2>Payment Information</h2>
+            <div class="form-group">
+                <label for="cardNumber">Card Number</label>
+                <input type="text" class="form-control" id="cardNumber" name="cardNumber" value="@Model.CardNumber">
+                @Html.ValidationMessageFor(m => m.CardNumber)
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="expirationDate">Expiration Date</label>
+                    <input type="date" class="form-control" id="expirationDate" name="expirationDate" value="@Model.ExpirationDate">
+                    @Html.ValidationMessageFor(m => m.ExpirationDate)
                 </div>
                 <div class="form-group">
-                    <label for="shippingAddress">Address</label>
-                    <input type="text" class="form-control" id="shippingAddress" name="shippingAddress">
-                    @Html.ValidationMessageFor(m => m.ShippingStreet)
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="shippingCity">City</label>
-                        <input type="text" class="form-control" id="shippingCity" name="shippingCity">
-                        @Html.ValidationMessageFor(m => m.ShippingCity)
-                    </div>
-                    <div class="form-group">
-                        <label for="shippingState">State/Province</label>
-                        <input type="text" class="form-control" id="shippingState" name="shippingState">
-                        @Html.ValidationMessageFor(m => m.ShippingState)
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="shippingPostalCode">Postal Code</label>
-                        <input type="text" class="form-control" id="shippingPostalCode" name="shippingPostalCode">
-                        @Html.ValidationMessageFor(m => m.ShippingPostalCode)
-                    </div>
-                    <div class="form-group">
-                        <label for="shippingCountry">Country</label>
-                        <input type="text" class="form-control" id="shippingCountry" name="shippingCountry">
-                        @Html.ValidationMessageFor(m => m.ShippingCountry)
-                    </div>
+                    <label for="cvv">CVV</label>
+                    <input type="password" class="form-control" id="cvv" name="cvv" value="@Model.Cvv">
+                    @Html.ValidationMessageFor(m => m.Cvv)
                 </div>
             </div>
-        </div>
-        <h2>Payment Information</h2>
-        <div class="form-group">
-            <label for="cardNumber">Card Number</label>
-            <input type="text" class="form-control" id="cardNumber" name="cardNumber">
-            @Html.ValidationMessageFor(m => m.CardNumber)
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label for="expirationDate">Expiration Date</label>
-                <input type="date" class="form-control" id="expirationDate" name="expirationDate">
-                @Html.ValidationMessageFor(m => m.ExpirationDate)
-            </div>
-            <div class="form-group">
-                <label for="cvv">CVV</label>
-                <input type="password" class="form-control" id="cvv" name="cvv">
-                @Html.ValidationMessageFor(m => m.Cvv)
-            </div>
-        </div>
 
-        <button type="submit" class="btn btn-success mt-2">Complete Order</button>
-        <a href="/Product/Shop" class="btn btn-primary mt-2">Continue Shopping</a>
+            <button type="submit" class="btn btn-success mt-2">Complete Order</button>
+            <a href="/Product/Shop" class="btn btn-primary mt-2">Continue Shopping</a>
+        </div>
     </form>
 </div>
+

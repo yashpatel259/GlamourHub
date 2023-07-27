@@ -8,10 +8,10 @@ namespace GlamourHub.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly GlamourHubContext _dbContext;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext dbContext)
+        public HomeController(ILogger<HomeController> logger, GlamourHubContext dbContext)
         {
             _logger = logger;
             _dbContext = dbContext;

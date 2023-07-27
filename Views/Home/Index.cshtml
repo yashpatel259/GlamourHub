@@ -73,33 +73,58 @@
         </div>
     </div>
 </div>
-
-@*<div class="container mt-4">
-    <h2 class="text-center mb-4">Popular Products</h2>
-    <div class="row">
-        @foreach (var product in Model)
-        {
-            @if (product.IsSale)
-            {
-                <div class="col-md-6 col-lg-3">
-                    <div class="card product-card">
-                        <img class="card-img-top" src="~/images/@product.ImagePath" alt="@product.Name">
-                        <div class="card-body">
-                            <h5 class="card-title">@product.Name</h5>
-                            <p class="card-text">$@product.Price</p>
+<!-- New Arrivals Section -->
+<div class="container mt-4">
+    <h2 class="text-center mb-4">New Arrivals</h2>
+    @if (Model.Any())
+    {
+        <div id="newArrivalsSlider" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                @for (int i = 0; i < Model.Count(); i += 4)
+                {
+                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                        <div class="row">
+                            @foreach (var product in Model.Skip(i).Take(4))
+                            {
+                                <div class="col-md-6 col-lg-3">
+                                    <a href="/Product/ProductDetails/@product.Id" class="card-link">
+                                        <div class="card product-card">
+                                            <img class="card-img-top" src="~/images/@product.ImagePath" alt="@product.Name">
+                                            <div class="card-body">
+                                                <h5 class="card-title">@product.Name</h5>
+                                                <p class="card-text">$@product.Price</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
                         </div>
                     </div>
-                </div>
-            }
-        }
-    </div>
-</div>*@
+                }
+            </div>
+            <a class="carousel-control-prev" href="#newArrivalsSlider" role="button" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#newArrivalsSlider" role="button" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </a>
+        </div>
+    }
+    else
+    {
+        <p>No new arrivals found.</p>
+    }
+</div>
+
+<!-- Products On Sale Section -->
 <div class="container mt-4">
     <h2 class="text-center mb-4">Products On Sale</h2>
     @if (Model.Any(product => product.IsSale))
     {
         var onSaleProducts = Model.Where(product => product.IsSale).ToList();
-        if (onSaleProducts.Count >= 4)
+        @if (onSaleProducts.Count >= 4)
         {
             <div id="productSlider" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
@@ -160,3 +185,4 @@
         <p>No products are currently on sale.</p>
     }
 </div>
+

@@ -10,7 +10,7 @@ namespace GlamourHub.Models
         public Product()
         {
             Carts = new HashSet<Cart>();
-            OrderItems = new HashSet<OrderItem>();
+            OrderItems = new HashSet<order_items>();
             Reviews = new HashSet<Review>();
         }
 
@@ -47,7 +47,7 @@ namespace GlamourHub.Models
         public virtual Brand? Brand { get; set; }
         public virtual Category? Category { get; set; }
         public virtual ICollection<Cart> Carts { get; set; }
-        public virtual ICollection<OrderItem> OrderItems { get; set; }
+        public virtual ICollection<order_items> OrderItems { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
 
     }

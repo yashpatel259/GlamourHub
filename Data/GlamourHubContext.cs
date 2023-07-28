@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GlamourHub.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -16,16 +17,25 @@ namespace GlamourHub.Models
         {
         }
 
-        public virtual DbSet<Address> Addresses { get; set; } = null!;
+        public virtual DbSet<Address> Address { get; set; } = null!;
         public virtual DbSet<Brand> Brands { get; set; } = null!;
-        public virtual DbSet<Cart> Carts { get; set; } = null!;
+        public virtual DbSet<Cart> Cart { get; set; } = null!;
         public virtual DbSet<Category> Categories { get; set; } = null!;
-        public virtual DbSet<Order> Orders { get; set; } = null!;
-        public virtual DbSet<OrderItem> OrderItems { get; set; } = null!;
+        public virtual DbSet<Order> Order { get; set; } = null!;
+        public virtual DbSet<order_items> order_items { get; set; } = null!;
         public virtual DbSet<Payment> Payments { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<Review> Reviews { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
+        public IEnumerable<string> GetProductNames()
+        {
+            return Products.Select(p => p.Name).ToList();
+        }
+
+        public IEnumerable<string> GetBrandNames()
+        {
+            return Brands.Select(b => b.Name).ToList();
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -43,39 +53,25 @@ namespace GlamourHub.Models
                 entity.ToTable("addresses");
 
                 entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.UserId).HasColumnName("UserId");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
 
-                entity.Property(e => e.City)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("city");
-
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasColumnName("created_at")
-                    .HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.PostalCode)
-                    .HasMaxLength(20)
-                    .IsUnicode(false)
-                    .HasColumnName("postal_code");
-
-                entity.Property(e => e.State)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("state");
-
-                entity.Property(e => e.Street)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("street");
-
-                entity.Property(e => e.UserId).HasColumnName("user_id");
+                // Shipping address properties
+                entity.Property(e => e.FirstName).HasColumnName("shipping_first_name");
+                entity.Property(e => e.LastName).HasColumnName("shipping_last_name");
+                entity.Property(e => e.Street).HasColumnName("shipping_street");
+                entity.Property(e => e.City).HasColumnName("shipping_city");
+                entity.Property(e => e.State).HasColumnName("shipping_state");
+                entity.Property(e => e.PostalCode).HasColumnName("shipping_postal_code");
+                entity.Property(e => e.Country).HasColumnName("shipping_country");
+                entity.Property(e => e.Phone).HasColumnName("shipping_phone");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Addresses)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__addresses__user___4222D4EF");
             });
+
 
             modelBuilder.Entity<Brand>(entity =>
             {
@@ -141,24 +137,28 @@ namespace GlamourHub.Models
 
             modelBuilder.Entity<Order>(entity =>
             {
-                entity.ToTable("orders");
+                entity.ToTable("order");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.CreatedAt)
+                entity.Property(e => e.OrderDate)
                     .HasColumnType("datetime")
-                    .HasColumnName("created_at")
+                    .HasColumnName("OrderDate")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.UserId).HasColumnName("UserId");
 
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Orders)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__orders__user_id__3A81B327");
+                // Define the relationship between Order and OrderItem
+                entity.HasMany(o => o.order_items)
+                      .WithOne(oi => oi.Order)
+                      .HasForeignKey(oi => oi.OrderId)
+                      .OnDelete(DeleteBehavior.Cascade); // If an Order is deleted, its OrderItems will also be deleted
+
+                // Optionally, you can add an index to the UserId column for better query performance
+                entity.HasIndex(e => e.UserId);
             });
 
-            modelBuilder.Entity<OrderItem>(entity =>
+            modelBuilder.Entity<order_items>(entity =>
             {
                 entity.ToTable("order_items");
 
@@ -166,58 +166,107 @@ namespace GlamourHub.Models
 
                 entity.Property(e => e.OrderId).HasColumnName("order_id");
 
-                entity.Property(e => e.Price)
-                    .HasColumnType("decimal(10, 2)")
-                    .HasColumnName("price");
-
                 entity.Property(e => e.ProductId).HasColumnName("product_id");
 
                 entity.Property(e => e.Quantity).HasColumnName("quantity");
 
-                entity.HasOne(d => d.Order)
-                    .WithMany(p => p.OrderItems)
-                    .HasForeignKey(d => d.OrderId)
-                    .HasConstraintName("FK__order_ite__order__3D5E1FD2");
+                entity.Property(e => e.Price).HasColumnName("price");
 
-                entity.HasOne(d => d.Product)
-                    .WithMany(p => p.OrderItems)
-                    .HasForeignKey(d => d.ProductId)
-                    .HasConstraintName("FK__order_ite__produ__3E52440B");
+                // Define the relationship between OrderItem and Order
+                entity.HasOne(oi => oi.Order)
+                      .WithMany(o => o.order_items)
+                      .HasForeignKey(oi => oi.OrderId)
+                      .OnDelete(DeleteBehavior.Cascade); // If an OrderItem is deleted, the associated Order will not be affected
+
+                // Define the relationship between OrderItem and Product
+                entity.HasOne(oi => oi.Product)
+                      .WithMany()
+                      .HasForeignKey(oi => oi.ProductId);
             });
+            modelBuilder.Entity<Order>()
+                .Property(o => o.TotalAmount)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.TaxAmount)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.DeliveryAmount)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.GrandTotal)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<order_items>()
+                .Property(oi => oi.Price)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Product>()
+                .Property(p => p.Price)
+                .HasColumnType("decimal(18,2)");
+
+            //modelBuilder.Entity<OrderItem>(entity =>
+            //{
+            //    entity.ToTable("order_items");
+
+            //    entity.Property(e => e.Id).HasColumnName("id");
+
+            //    entity.Property(e => e.OrderId).HasColumnName("order_id");
+
+            //    entity.Property(e => e.Price)
+            //        .HasColumnType("decimal(10, 2)")
+            //        .HasColumnName("price");
+
+            //    entity.Property(e => e.ProductId).HasColumnName("product_id");
+
+            //    entity.Property(e => e.Quantity).HasColumnName("quantity");
+
+            //    entity.HasOne(d => d.Order)
+            //        .WithMany(p => p.OrderItems)
+            //        .HasForeignKey(d => d.OrderId)
+            //        .HasConstraintName("FK__order_ite__order__3D5E1FD2");
+
+            //    entity.HasOne(d => d.Product)
+            //        .WithMany(p => p.OrderItems)
+            //        .HasForeignKey(d => d.ProductId)
+            //        .HasConstraintName("FK__order_ite__produ__3E52440B");
+            //});
 
             modelBuilder.Entity<Payment>(entity =>
-            {
-                entity.ToTable("payments");
+                {
+                    entity.ToTable("payments");
 
-                entity.Property(e => e.Id).HasColumnName("id");
+                    entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.CardNumber)
-                    .HasMaxLength(16)
-                    .IsUnicode(false)
-                    .HasColumnName("card_number");
+                    entity.Property(e => e.CardNumber)
+                            .HasMaxLength(16)
+                            .IsUnicode(false)
+                            .HasColumnName("card_number");
 
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasColumnName("created_at")
-                    .HasDefaultValueSql("(getdate())");
+                    entity.Property(e => e.CreatedAt)
+                            .HasColumnType("datetime")
+                            .HasColumnName("created_at")
+                            .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.Cvv)
-                    .HasMaxLength(4)
-                    .IsUnicode(false)
-                    .HasColumnName("cvv");
+                    entity.Property(e => e.Cvv)
+                            .HasMaxLength(4)
+                            .IsUnicode(false)
+                            .HasColumnName("cvv");
 
-                entity.Property(e => e.ExpirationDate)
-                    .HasMaxLength(5)
-                    .IsUnicode(false)
-                    .HasColumnName("expiration_date");
+                    entity.Property(e => e.ExpirationDate)
+                            .HasMaxLength(5)
+                            .IsUnicode(false)
+                            .HasColumnName("expiration_date");
 
-                entity.Property(e => e.UserId).HasColumnName("user_id");
+                    entity.Property(e => e.UserId).HasColumnName("UserId");
 
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Payments)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__payments__user_i__45F365D3");
-            });
+                    entity.HasOne(d => d.User)
+                            .WithMany(p => p.Payments)
+                            .HasForeignKey(d => d.UserId)
+                            .HasConstraintName("FK__payments__user_i__45F365D3");
+                });
 
             modelBuilder.Entity<Product>(entity =>
             {
@@ -230,32 +279,32 @@ namespace GlamourHub.Models
                 entity.Property(e => e.CategoryId).HasColumnName("category_id");
 
                 entity.Property(e => e.CreatedAt)
-                    .HasColumnType("datetime")
-                    .HasColumnName("created_at")
-                    .HasDefaultValueSql("(getdate())");
+                                .HasColumnType("datetime")
+                                .HasColumnName("created_at")
+                                .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.Description)
-                    .IsUnicode(false)
-                    .HasColumnName("description");
+                                .IsUnicode(false)
+                                .HasColumnName("description");
 
                 entity.Property(e => e.Name)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("name");
+                                .HasMaxLength(100)
+                                .IsUnicode(false)
+                                .HasColumnName("name");
 
                 entity.Property(e => e.Price)
-                    .HasColumnType("decimal(10, 2)")
-                    .HasColumnName("price");
+                                .HasColumnType("decimal(10, 2)")
+                                .HasColumnName("price");
 
                 entity.HasOne(d => d.Brand)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.BrandId)
-                    .HasConstraintName("FK__products__brand___31EC6D26");
+                                .WithMany(p => p.Products)
+                                .HasForeignKey(d => d.BrandId)
+                                .HasConstraintName("FK__products__brand___31EC6D26");
 
                 entity.HasOne(d => d.Category)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.CategoryId)
-                    .HasConstraintName("FK__products__catego__30F848ED");
+                                .WithMany(p => p.Products)
+                                .HasForeignKey(d => d.CategoryId)
+                                .HasConstraintName("FK__products__catego__30F848ED");
             });
 
             modelBuilder.Entity<Review>(entity =>
@@ -277,7 +326,7 @@ namespace GlamourHub.Models
 
                 entity.Property(e => e.Rating).HasColumnName("rating");
 
-                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.UserId).HasColumnName("UserId");
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.Reviews)

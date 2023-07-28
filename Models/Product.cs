@@ -10,7 +10,7 @@ namespace GlamourHub.Models
         public Product()
         {
             Carts = new HashSet<Cart>();
-            OrderItems = new HashSet<OrderItem>();
+            OrderItems = new HashSet<order_items>();
             Reviews = new HashSet<Review>();
         }
 
@@ -38,10 +38,17 @@ namespace GlamourHub.Models
         [Column ("image_path")]
         public string? ImagePath { get; set; }
 
+        public bool IsSale { get; set; }
+
+        [Required(ErrorMessage = "Quantity is required")]
+        [Range(0, int.MaxValue, ErrorMessage = "Quantity must be a non-negative value")]
+        public int StockQuantity { get; set; }
+
         public virtual Brand? Brand { get; set; }
         public virtual Category? Category { get; set; }
         public virtual ICollection<Cart> Carts { get; set; }
-        public virtual ICollection<OrderItem> OrderItems { get; set; }
+        public virtual ICollection<order_items> OrderItems { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
+
     }
 }

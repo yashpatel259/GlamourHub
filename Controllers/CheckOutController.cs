@@ -68,7 +68,7 @@ namespace GlamourHub.Controllers
                     // Save the order to the database
                     var order = new Order
                     {
-                        UserId = userId.ToString(),
+                        UserId = userId,
                         FirstName = model.FirstName,
                         LastName = model.LastName,
                         Street = model.Street,

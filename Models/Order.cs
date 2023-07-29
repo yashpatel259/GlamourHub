@@ -12,7 +12,7 @@ namespace GlamourHub.Models
         public int Id { get; set; }
 
         // Foreign key to the User table
-        public string UserId { get; set; }
+        public int UserId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Street { get; set; }

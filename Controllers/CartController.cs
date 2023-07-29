@@ -123,6 +123,27 @@ namespace GlamourHub.Controllers
             _dbContext.SaveChanges();
         }
 
+        public int GetTotalProductsInCart(string username)
+        {
+            var user = _dbContext.Users.FirstOrDefault(u => u.Username == username);
+
+            int userId = 0;
+            if (user != null)
+            {
+                userId = user.Id;
+            }
+
+            // Fetch cart items for the current user
+            var cartItems = _dbContext.Cart
+                .Where(ci => ci.UserId == userId)
+                .ToList();
+
+            // Calculate the total number of products in the cart
+            int totalProductsInCart = cartItems.Sum(ci => ci.Quantity);
+
+            return totalProductsInCart;
+        }
+
         private int GetUserId()
         {
             var username = HttpContext.Session.GetString("Username");

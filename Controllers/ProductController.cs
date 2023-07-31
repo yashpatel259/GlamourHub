@@ -208,15 +208,22 @@ namespace GlamourHub.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Shop()
+        public IActionResult Shop(int? page)
         {
-            var Shop = _dbContext.Products
+            int pageSize = 16; // Number of products per page
+
+            // Get all products from the database, including related data (Category and Brand)
+            var allProducts = _dbContext.Products
                 .Include(p => p.Category)
                 .Include(p => p.Brand)
                 .ToList();
 
-            return View(Shop);
+            // Paginate the products using the PaginatedList class
+            var paginatedProducts = PaginatedList<Product>.Create(allProducts, page ?? 1, pageSize);
+
+            return View(paginatedProducts);
         }
+
 
         // GET: /Product/Details/{id}
         [AllowAnonymous]

@@ -42,7 +42,9 @@
                             <li class="nav-item">
                                 <a class="btn nav-link text-decoration-none me-2" asp-area="" asp-controller="Product" asp-action="ProductList">Manage Products</a>
                             </li>
-
+                            <li class="nav-item">
+                                <a class="btn nav-link text-decoration-none me-2" asp-area="" asp-controller="Order" asp-action="OrdersList">Orders</a>
+                            </li>
                         }
                     </ul>
                     <div class="d-flex align-items-center flex-column flex-sm-row">
@@ -56,7 +58,12 @@
                                 </button>
                             </div>
                         </form>
+                        
                         <div class="d-flex mt-2 mt-sm-0 navbar-nav">
+                            <a class="btn nav-link text-decoration-none me-2" asp-area="" asp-controller="Cart" asp-action="Index">
+                                <i class="fas fa-shopping-cart">@ViewBag.TotalProductsInCart</i>
+                                
+                            </a>
                             @if (Context.Session.GetString("Username") != null)
                             {
                                 <form asp-area="" asp-controller="Login" asp-action="Logout" method="post" class="me-2">
@@ -80,11 +87,6 @@
                                         });
                                 }
                             </script>
-
-
-                            <a class="btn nav-link text-decoration-none me-2" asp-area="" asp-controller="Cart" asp-action="Index">
-                                <i class="fas fa-shopping-cart"></i> Cart
-                            </a>
                         </div>
                     </div>
                 </div>

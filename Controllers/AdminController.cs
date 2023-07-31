@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using GlamourHub.DataAccess;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 
 namespace GlamourHub.Controllers
 {

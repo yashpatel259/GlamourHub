@@ -1,5 +1,11 @@
 ﻿@model List<GlamourHub.Models.Product>
 
+@{
+    ViewData["Title"] = "Search Results";
+}
+
+<h3 class="my-3">Search results for "@ViewBag.SearchQuery"</h3>
+
 <div class="row my-2">
     @if (Model.Any())
     {

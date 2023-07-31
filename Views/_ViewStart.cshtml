@@ -1,3 +1,17 @@
 ﻿@{
     Layout = "_Layout";
+
+    // Check if the user is logged in (i.e., the username is in the session)
+    var username = Context.Session.GetString("Username");
+    if (!string.IsNullOrEmpty(username))
+    {
+        // User is logged in, get the total products in the cart
+        var cartController = new GlamourHub.Controllers.CartController(new GlamourHub.Models.GlamourHubContext());
+        ViewBag.TotalProductsInCart = cartController.GetTotalProductsInCart(username);
+    }
+    else
+    {
+        // User is not logged in, set total products in the cart to 0
+        ViewBag.TotalProductsInCart = 0;
+    }
 }

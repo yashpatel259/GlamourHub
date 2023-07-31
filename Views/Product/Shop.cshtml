@@ -1,29 +1,184 @@
-﻿@{
+﻿@model PaginatedList<Product>
+
+@{
     ViewData["Title"] = "Shop";
 }
 
 <div class="container">
-    <h1>Shop</h1>
+    <div class="row my-3">
+        <div class="col-md-8">
+            <h2>Shop</h2>
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-primary mb-3 float-md-end" id="filterButton">Filter</button>
+        </div>
+    </div>
+
+    <div class="row my-3">
+        <div class="col-md-9"></div>
+        <div class="col-md-3">
+            <!-- Filter dropdown menu -->
+            <div class="dropdown mb-3" id="filterDropdown" style="display: none;">
+                <!-- Categories filter -->
+                <div class="mb-2">
+                    <h6>Categories</h6>
+                    <select class="form-select" id="categoryFilter">
+                        <option value="">All Categories</option>
+                        @foreach (var category in Model.Select(p => p.Category).Distinct())
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Brands filter -->
+                <div class="mb-2">
+                    <h6>Brands</h6>
+                    <select class="form-select" id="brandFilter">
+                        <option value="">All Brands</option>
+                        @foreach (var brand in Model.Select(p => p.Brand).Distinct())
+                        {
+                            <option value="@brand.Id">@brand.Name</option>
+                        }
+                    </select>
+                </div>
+                <!-- Price range filter -->
+                <div class="mb-2">
+                    <h6>Price Range</h6>
+                    <select class="form-select" id="priceFilter">
+                        <option value="">All Prices</option>
+                        <option value="50">50 or Less</option>
+                        <option value="51-99">51-99</option>
+                        <option value="100-499">100-499</option>
+                        <option value="500">500 or more</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row my-2">
         @foreach (var product in Model)
         {
-            <div class="col-md-3 p-2">
+            <div class="col-md-3 p-2 productcard"
+             data-category="@product.CategoryId"
+             data-brand="@product.BrandId"
+             data-price="@product.Price">
                 <a href="/Product/ProductDetails/@product.Id" class="card-link">
                     <div class="card mb-3">
                         <img src="@Url.Content("~/images/" + product.ImagePath)" class="card-img-top product-img" alt="Product Image">
                         <div class="card-body">
                             <h5 class="card-title">@product.Name</h5>
                             <p class="card-text">Price: @product.Price</p>
-                            @*<form action="/Cart/AddToCart" method="post">
-                                <input type="hidden" name="productId" value="@product.Id" />
-                                <button type="submit" class="btn btn-primary">Add to Cart</button>
-                            </form>*@
                         </div>
                     </div>
                 </a>
             </div>
-
         }
     </div>
+
+    <!-- No product found message -->
+    <div class="row my-2">
+        <div class="col-md-12" id="noProductMessage" style="display: none;">
+            <p>No products found.</p>
+        </div>
+    </div>
+
+    <!-- Pagination links -->
+
+    <ul class="pagination">
+        @if (Model.HasPreviousPage)
+        {
+            <li class="page-item">
+                <a class="page-link" href="?page=@(Model.PageIndex - 1)">Previous</a>
+            </li>
+        }
+
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                <a class="page-link" href="?page=@i">@i</a>
+            </li>
+        }
+
+        @if (Model.HasNextPage)
+        {
+            <li class="page-item">
+                <a class="page-link" href="?page=@(Model.PageIndex + 1)">Next</a>
+            </li>
+        }
+    </ul>
 </div>
+
+@section Scripts {
+    <script>
+        // JavaScript code for the filter functionality
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get filter button and dropdown
+            const filterButton = document.getElementById("filterButton");
+            const filterDropdown = document.getElementById("filterDropdown");
+
+            // Show filter dropdown on filter button click
+            filterButton.addEventListener("click", function () {
+                if (filterDropdown.style.display === "none") {
+                    filterDropdown.style.display = "block";
+                } else {
+                    filterDropdown.style.display = "none";
+                }
+            });
+
+            // Get filter elements
+            const categoryFilter = document.getElementById("categoryFilter");
+            const brandFilter = document.getElementById("brandFilter");
+            const priceFilter = document.getElementById("priceFilter");
+
+            // Function to handle filtering
+            function handleFiltering() {
+                const selectedCategoryId = categoryFilter.options[categoryFilter.selectedIndex].value;
+                const selectedBrandId = brandFilter.options[brandFilter.selectedIndex].value;
+                const selectedPriceRange = priceFilter.value;
+
+                // Get all products
+                const products = document.getElementsByClassName("productcard");
+
+                let productsFound = 0; // Counter to track the number of products found
+
+                // Loop through all products and hide/show them based on filters
+                for (let i = 0; i < products.length; i++) {
+                    const product = products[i];
+                    const categoryId = product.getAttribute("data-category");
+                    const brandId = product.getAttribute("data-brand");
+                    const productPrice = parseFloat(product.getAttribute("data-price"));
+
+                    const categoryMatch = selectedCategoryId === "" || categoryId === selectedCategoryId;
+                    const brandMatch = selectedBrandId === "" || brandId === selectedBrandId;
+                    const priceMatch =
+                        selectedPriceRange === "" || // Show all prices if no price range is selected
+                        (selectedPriceRange === "50" && productPrice <= 50) ||
+                        (selectedPriceRange === "51-99" && productPrice >= 51 && productPrice <= 99) ||
+                        (selectedPriceRange === "100-499" && productPrice >= 100 && productPrice <= 499) ||
+                        (selectedPriceRange === "500" && productPrice >= 500);
+
+                    if (categoryMatch && brandMatch && priceMatch) {
+                        product.style.display = "block"; // Show the product
+                         productsFound++; // Increment the productsFound counter
+                    } else {
+                        product.style.display = "none"; // Hide the product
+                    }
+
+                    // Show/hide the "No products found" message based on productsFound counter
+                    const noProductMessage = document.getElementById("noProductMessage");
+                    noProductMessage.style.display = productsFound === 0 ? "block" : "none";
+                }
+            }
+
+            // Listen for changes to the category, brand, and price filter dropdowns
+            categoryFilter.addEventListener("change", handleFiltering);
+            brandFilter.addEventListener("change", handleFiltering);
+            priceFilter.addEventListener("change", handleFiltering);
+
+            // Call the filtering function on initial load
+            handleFiltering();
+        });
+    </script>
+}

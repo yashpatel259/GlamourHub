@@ -1,37 +1,77 @@
 ﻿@model GlamourHub.Models.Order
 
-<h1>Order Details</h1>
+@{
+    ViewData["Title"] = "Order Details";
+}
 
-<p>Order ID: @Model.Id</p>
-<p>Customer Name: @Model.FirstName @Model.LastName</p>
-<p>Shipping Address: @Model.Street, @Model.City, @Model.State, @Model.PostalCode, @Model.Country</p>
-<p>Phone: @Model.Phone</p>
-<p>Total Amount: @Model.TotalAmount</p>
-<p>Tax Amount: @Model.TaxAmount</p>
-<p>Delivery Amount: @Model.DeliveryAmount</p>
-<p>Grand Total: @Model.GrandTotal</p>
-<p>Is Free Shipping: @Model.IsFreeShipping</p>
-<p>Order Date: @Model.OrderDate</p>
+@if (Context.Session.GetString("Role") == "Admin")
+{
+    @await Html.PartialAsync("_AdminNavbar")
+}
 
-<h2>Order Items</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Product Name</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Subtotal</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.order_items)
-        {
-            <tr>
-                <td>@item.Product.Name</td>
-                <td>@item.Quantity</td>
-                <td>@item.Price</td>
-                <td>@(item.Quantity * item.Price)</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container my-3">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center mb-4">Order Details</h2>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Order Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Order ID:</strong> @Model.Id</p>
+                            <p><strong>Customer Name:</strong> @Model.FirstName @Model.LastName</p>
+                            <p><strong>Shipping Address:</strong> @Model.Street, @Model.City, @Model.State, @Model.PostalCode, @Model.Country</p>
+                            <p><strong>Phone:</strong> @Model.Phone</p>
+                            <p><strong>Order Date:</strong> @Model.OrderDate</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong> Subtotal:</strong> @Model.TotalAmount</p>
+                            <p><strong>Tax Amount:</strong> @Model.TaxAmount</p>
+                            <p><strong>Delivery Amount:</strong> @Model.DeliveryAmount</p>
+                            <p><strong>Grand Total:</strong> @Model.GrandTotal</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5 pt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Order Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.order_items)
+                                {
+                                    <tr>
+                                        <td class="align-middle">@item.Product.Name</td>
+                                        <td class="align-middle">@item.Quantity</td>
+                                        <td class="align-middle">@item.Price</td>
+                                        <td class="align-middle">@(item.Quantity * item.Price)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -33,7 +33,8 @@ namespace GlamourHub.Controllers
                 // Combine product names and brand names to create the data array
                 var data = productNames.Concat(brandNames).ToList();
 
-                // Pass the matching products to the view
+                // Pass the matching products and search query to the view
+                ViewBag.SearchQuery = searchQuery;
                 return View(matchingProducts);
             }
 

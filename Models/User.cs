@@ -45,6 +45,10 @@ namespace GlamourHub.Models
         [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
         public string Email { get; set; }
 
+        public string? VerificationToken { get; set; }
+
+        public bool IsEmailVerified { get; set; }
+
         public virtual ICollection<Address> Addresses { get; set; }
         public virtual ICollection<Cart> Carts { get; set; }
         public virtual ICollection<Order> Orders { get; set; }

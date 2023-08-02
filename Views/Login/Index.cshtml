@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Login";
+    bool showResendVerification = ViewData["ShowResendVerification"] != null && (bool)ViewData["ShowResendVerification"];
 }
 
 <h2 class="text-center">Login</h2>
@@ -23,6 +24,12 @@
             {
                 <div class="alert alert-danger" role="alert">
                     @ViewData["ErrorMessage"]
+                </div>
+            }
+            @if (showResendVerification) 
+            {
+                <div class="form-group mb-2">
+                    <a asp-action="ResendVerificationEmail" asp-controller="Login" class="text-decoration-none me-2">Resend Verification Email</a>
                 </div>
             }
             <div class="form-group mb-2">

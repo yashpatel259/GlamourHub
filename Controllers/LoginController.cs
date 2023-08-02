@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.Design;
 using Microsoft.AspNetCore.Identity;
+using System.Net.Mail;
+using System.Net;
 
 namespace GlamourHub.Controllers
 {
@@ -27,11 +29,17 @@ namespace GlamourHub.Controllers
                     var UsernameE = model.Username;
                     var PasswordE = model.Password;
 
-
                     var user = context.Users.FirstOrDefault(store => store.Username == UsernameE);
 
                     if (user != null)
                     {
+                        if (!user.IsEmailVerified)
+                        {
+                            ViewData["ErrorMessage"] = "Please verify your email address before logging in.";
+                            ViewData["ShowResendVerification"] = true; 
+                            return View(model);
+                        }
+
                         string storedPassword = user.Password;
                         string PasswordEn = EncodePasswordToBase64(PasswordE);
                         if (storedPassword == PasswordEn)
@@ -58,8 +66,65 @@ namespace GlamourHub.Controllers
                     }
                 }
             }
+
             return View(model);
         }
+
+        public IActionResult ResendVerificationEmail()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ResendVerificationEmail(string email)
+        {
+            using (var context = new GlamourHubContext())
+            {
+                var user = context.Users.FirstOrDefault(u => u.Email == email);
+
+                if (user != null)
+                {
+                    // Generate a new verification token
+                    string verificationToken = Guid.NewGuid().ToString();
+
+                    // Update the user's verification token in the database
+                    user.VerificationToken = verificationToken;
+                    context.SaveChanges();
+
+                    // Send the verification email
+                    // ... (remaining code for sending the email)
+
+                    // Resend the verification email
+                    var client = new SmtpClient("smtp.gmail.com", 587)
+                    {
+                        Credentials = new NetworkCredential("glamourhub04@gmail.com", "fqsurzmnlynhkknd"),
+                        EnableSsl = true
+                    };
+
+                    string verificationUrl = $"{Request.Scheme}://{Request.Host}/Register/ConfirmEmail?token={verificationToken}";
+
+                    string emailBody = $"Please verify your email by clicking on this link: <a href='{verificationUrl}'>Verify Email</a>";
+
+                    MailMessage mm = new MailMessage();
+                    mm.To.Add(new MailAddress(user.Email));
+                    mm.From = new MailAddress("glamourhub04@gmail.com");
+                    mm.Subject = "Confirm Email";
+                    mm.Body = emailBody;
+                    mm.IsBodyHtml = true;
+
+                    client.Send(mm);
+
+                    ViewData["SuccessMessage"] = "A new verification email has been sent to your email address. Please check your inbox and click on the link to complete the registration.";
+                }
+                else
+                {
+                    ViewData["ErrorMessage"] = "Email address not found. Please check your email or register again.";
+                }
+            }
+
+            return View();
+        }
+
 
         public IActionResult Logout()
         {

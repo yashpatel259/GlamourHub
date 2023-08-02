@@ -208,22 +208,73 @@ namespace GlamourHub.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Shop(int? page)
+        public IActionResult Shop(int? page, string categoryFilter, string brandFilter, string priceFilter)
         {
             int pageSize = 16; // Number of products per page
 
+            // Get all available categories and brands from the database
+            var allCategories = _dbContext.Categories.ToList();
+            var allBrands = _dbContext.Brands.ToList();
+
+            // Pass the lists of categories and brands to the view using ViewBag
+            ViewBag.AllCategories = allCategories;
+            ViewBag.AllBrands = allBrands;
+
             // Get all products from the database, including related data (Category and Brand)
-            var allProducts = _dbContext.Products
+            IQueryable<Product> query = _dbContext.Products
                 .Include(p => p.Category)
-                .Include(p => p.Brand)
-                .ToList();
+                .Include(p => p.Brand);
 
-            // Paginate the products using the PaginatedList class
-            var paginatedProducts = PaginatedList<Product>.Create(allProducts, page ?? 1, pageSize);
+            // Apply filters if provided
+            if (!string.IsNullOrEmpty(categoryFilter))
+            {
+                int categoryId = int.Parse(categoryFilter);
+                query = query.Where(p => p.CategoryId == categoryId);
+            }
 
-            return View(paginatedProducts);
+            if (!string.IsNullOrEmpty(brandFilter))
+            {
+                int brandId = int.Parse(brandFilter);
+                query = query.Where(p => p.BrandId == brandId);
+            }
+
+            if (!string.IsNullOrEmpty(priceFilter))
+            {
+                switch (priceFilter)
+                {
+                    case "50":
+                        query = query.Where(p => p.Price <= 50);
+                        break;
+                    case "51-99":
+                        query = query.Where(p => p.Price >= 51 && p.Price <= 99);
+                        break;
+                    case "100-499":
+                        query = query.Where(p => p.Price >= 100 && p.Price <= 499);
+                        break;
+                    case "500":
+                        query = query.Where(p => p.Price >= 500);
+                        break;
+                }
+            }
+
+            // Get the total count of filtered products
+            int totalCount = query.Count();
+
+            // Paginate the filtered products using the PaginatedList class
+            var paginatedProducts = PaginatedList<Product>.Create(query, page ?? 1, pageSize);
+
+            // Create a ViewModel that holds the paginated products and the filter parameters
+            var viewModel = new ShopViewModel
+            {
+                Products = paginatedProducts,
+                CategoryFilter = categoryFilter,
+                BrandFilter = brandFilter,
+                PriceFilter = priceFilter,
+                TotalCount = totalCount
+            };
+
+            return View(viewModel);
         }
-
 
         // GET: /Product/Details/{id}
         [AllowAnonymous]

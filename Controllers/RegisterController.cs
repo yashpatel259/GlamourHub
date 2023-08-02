@@ -1,5 +1,7 @@
 ﻿using GlamourHub.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System.Net.Mail;
 
 namespace GlamourHub.Controllers
 {
@@ -19,32 +21,40 @@ namespace GlamourHub.Controllers
                 {
                     using (var context = new GlamourHubContext())
                     {
-                        // Check if email already exists
-                        bool isEmailRegistered = context.Users.Any(u => u.Email == user.Email);
-                        if (isEmailRegistered)
-                        {
-                            ModelState.AddModelError("Email", "You have already registered with this email.");
-                            return View(user);
-                        }
+                        // Generate a verification token
+                        string verificationToken = Guid.NewGuid().ToString();
 
-                        // Check if username already exists
-                        bool isUsernameTaken = context.Users.Any(u => u.Username == user.Username);
-                        if (isUsernameTaken)
-                        {
-                            ModelState.AddModelError("Username", "Username is already taken.");
-                            return View(user);
-                        }                       
-
-                        // Encode password
-                        string encodedPassword = EncodePasswordToBase64(user.Password);
-                        user.Password = encodedPassword;
-
-                        // Save the user to the database
+                        // Save the token and other registration data to the database
+                        user.VerificationToken = verificationToken;
                         user.CreatedAt = DateTime.Now;
+
+                        // Hash the password before saving it to the database
+                        user.Password = EncodePasswordToBase64(user.Password);
+
                         context.Users.Add(user);
                         context.SaveChanges();
+
+                        // Send the verification email
+                        var client = new SmtpClient("smtp.gmail.com", 587)
+                        {
+                            Credentials = new NetworkCredential("glamourhub04@gmail.com", "fqsurzmnlynhkknd"),
+                            EnableSsl = true
+                        };
+
+                        string verificationUrl = $"{Request.Scheme}://{Request.Host}/Register/ConfirmEmail?token={verificationToken}";
+                        string emailBody = $"Please verify your email by clicking on this link: <a href='{verificationUrl}'>Verify Email</a>";
+
+                        MailMessage mm = new MailMessage();
+                        mm.To.Add(new MailAddress(user.Email));
+                        mm.From = new MailAddress("glamourhub04@gmail.com");
+                        mm.Subject = "Confirm Email";
+                        mm.Body = emailBody;
+                        mm.IsBodyHtml = true;
+
+                        client.Send(mm);
                     }
-                    TempData["SuccessMessage"] = "You have registered successfully!";
+
+                    ViewData["SuccessMessage"] = "A verification email has been sent to your email address. Please check your inbox and click on the link to complete the registration.";
                     return View(user);
                 }
 
@@ -54,6 +64,30 @@ namespace GlamourHub.Controllers
             {
                 Console.WriteLine(ex.Message);
                 return View("Error");
+            }
+        }
+
+        public IActionResult ConfirmEmail(string token)
+        {
+            using (var context = new GlamourHubContext())
+            {
+                // Find the user with the given verification token
+                var user = context.Users.FirstOrDefault(u => u.VerificationToken == token);
+
+                if (user != null)
+                {
+                    // Mark the user's email as verified
+                    user.IsEmailVerified = true;
+                    context.SaveChanges();
+
+                    TempData["SuccessMessage"] = "Your email address has been verified successfully. You can now log in with your credentials.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Invalid verification token. Please try again or contact support.";
+                }
+
+                return  View();
             }
         }
 
@@ -72,6 +106,6 @@ namespace GlamourHub.Controllers
                 throw new Exception("Error in base64Encode" + ex.Message);
             }
         }
-       
+
     }
 }

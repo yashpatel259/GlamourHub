@@ -1,4 +1,4 @@
-﻿@model PaginatedList<Product>
+﻿@model GlamourHub.Models.ShopViewModel
 
 @{
     ViewData["Title"] = "Shop";
@@ -24,7 +24,7 @@
                     <h6>Categories</h6>
                     <select class="form-select" id="categoryFilter">
                         <option value="">All Categories</option>
-                        @foreach (var category in Model.Select(p => p.Category).Distinct())
+                        @foreach (var category in ViewBag.AllCategories)
                         {
                             <option value="@category.Id">@category.Name</option>
                         }
@@ -36,12 +36,13 @@
                     <h6>Brands</h6>
                     <select class="form-select" id="brandFilter">
                         <option value="">All Brands</option>
-                        @foreach (var brand in Model.Select(p => p.Brand).Distinct())
+                        @foreach (var brand in ViewBag.AllBrands)
                         {
                             <option value="@brand.Id">@brand.Name</option>
                         }
                     </select>
                 </div>
+
                 <!-- Price range filter -->
                 <div class="mb-2">
                     <h6>Price Range</h6>
@@ -58,7 +59,7 @@
     </div>
 
     <div class="row my-2">
-        @foreach (var product in Model)
+        @foreach (var product in Model.Products)
         {
             <div class="col-md-3 p-2 productcard"
              data-category="@product.CategoryId"
@@ -87,24 +88,24 @@
     <!-- Pagination links -->
 
     <ul class="pagination">
-        @if (Model.HasPreviousPage)
+        @if (Model.Products.HasPreviousPage)
         {
             <li class="page-item">
-                <a class="page-link" href="?page=@(Model.PageIndex - 1)">Previous</a>
+                <a class="page-link" href="?page=@(Model.Products.PageIndex - 1)&categoryFilter=@Model.CategoryFilter&brandFilter=@Model.BrandFilter&priceFilter=@Model.PriceFilter">Previous</a>
             </li>
         }
 
-        @for (int i = 1; i <= Model.TotalPages; i++)
+        @for (int i = 1; i <= Model.Products.TotalPages; i++)
         {
-            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                <a class="page-link" href="?page=@i">@i</a>
+            <li class="page-item @(i == Model.Products.PageIndex ? "active" : "")">
+                <a class="page-link" href="?page=@i&categoryFilter=@Model.CategoryFilter&brandFilter=@Model.BrandFilter&priceFilter=@Model.PriceFilter">@i</a>
             </li>
         }
 
-        @if (Model.HasNextPage)
+        @if (Model.Products.HasNextPage)
         {
             <li class="page-item">
-                <a class="page-link" href="?page=@(Model.PageIndex + 1)">Next</a>
+                <a class="page-link" href="?page=@(Model.Products.PageIndex + 1)&categoryFilter=@Model.CategoryFilter&brandFilter=@Model.BrandFilter&priceFilter=@Model.PriceFilter">Next</a>
             </li>
         }
     </ul>
@@ -161,7 +162,7 @@
 
                     if (categoryMatch && brandMatch && priceMatch) {
                         product.style.display = "block"; // Show the product
-                         productsFound++; // Increment the productsFound counter
+                        productsFound++; // Increment the productsFound counter
                     } else {
                         product.style.display = "none"; // Hide the product
                     }

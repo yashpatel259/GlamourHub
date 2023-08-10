@@ -30,18 +30,35 @@ namespace GlamourHub.Controllers
         }
 
         [HttpGet]
-        public IActionResult UserList()
+        public IActionResult UserList(int? page)
         {
-            // Check if session data exists
-            if (!ValidateRole())
+            try
             {
-                // Redirect to login page if session data is missing
-                return RedirectToAction("Index", "Login");
-            }
-            IEnumerable<User> user = _dbContext.Users;
+                // Check if session data exists
+                if (!ValidateRole())
+                {
+                    // Redirect to login page if session data is missing
+                    return RedirectToAction("Index", "Login");
+                }
 
-            return View(user);
+                int pageSize = 10; // Change this to the desired page size
+                int pageNumber = page ?? 1;
+
+                IEnumerable<User> users = _dbContext.Users;
+
+                var pagedUsers = users.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+                ViewBag.CurrentPage = pageNumber;
+                ViewBag.TotalPages = (int)Math.Ceiling((double)users.Count() / pageSize);
+
+                return View(pagedUsers);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
+
 
 
         [HttpGet]

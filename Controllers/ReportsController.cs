@@ -73,6 +73,62 @@ namespace GlamourHub.Controllers
             }
         }
 
+        public IActionResult ProductInventoryReport()
+        {
+            try
+            {
+                // Check if session data exists
+                if (!ValidateRole())
+                {
+                    // Redirect to login page if session data is missing
+                    return RedirectToAction("Index", "Login");
+                }
+
+                // Call the stored procedure and get the product inventory details
+                List<ProductInventory> productInventory = _dbContext.GetProductInventory();
+
+                // Pass the data to the view
+                return View(productInventory);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public IActionResult PrintProductInventory()
+        {
+            try
+            {
+                // Check if session data exists
+                if (!ValidateRole())
+                {
+                    // Redirect to login page if session data is missing
+                    return RedirectToAction("Index", "Login");
+                }
+
+                string mimeType = "";
+                int extension = 1;
+
+                // Call the stored procedure and get the product inventory details
+                List<ProductInventory> productInventory = _dbContext.GetProductInventory();
+
+                var path = $"{this._webHostEnvironment.WebRootPath}\\Reports\\ProductInventory.rdlc";
+                Dictionary<string, string> parameters = new Dictionary<string, string>();
+
+                LocalReport localReport = new LocalReport(path);
+                localReport.AddDataSource("DataSet1", productInventory);
+                var result = localReport.Execute(RenderType.Pdf, extension, parameters, mimeType);
+
+                return File(result.MainStream, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+
         public bool ValidateRole()
         {
             return HttpContext.Session.GetString("Role") == "Admin" || HttpContext.Session.GetString("Role") == "Seller" ? true : false;

@@ -192,7 +192,7 @@ namespace GlamourHub.Controllers
             }
 
             model.CartItems = cart;
-            // If the form data is invalid, return the view with validation errors
+
             // Calculate the order summary values and update the model
             CalculateOrderSummary(model);
 

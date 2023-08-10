@@ -14,17 +14,35 @@ public class BrandController : Controller
         _dbContext = dbContext;
     }
 
-    public IActionResult BrandList()
+    public IActionResult BrandList(int? page)
     {
-        // Check if session data exists
-        if (!ValidateRole())
+        try
         {
-            // Redirect to login page if session data is missing
-            return RedirectToAction("Index", "Login");
+            // Check if session data exists
+            if (!ValidateRole())
+            {
+                // Redirect to login page if session data is missing
+                return RedirectToAction("Index", "Login");
+            }
+
+            int pageSize = 10; // Change this to the desired page size
+            int pageNumber = page ?? 1;
+
+            var brands = _dbContext.Brands.ToList();
+
+            var pagedBrands = brands.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)brands.Count() / pageSize);
+
+            return View(pagedBrands);
         }
-        var brands = _dbContext.Brands.ToList();
-        return View(brands);
+        catch (Exception ex)
+        {
+            return null;
+        }
     }
+
 
     [HttpGet]
     public IActionResult AddBrand()

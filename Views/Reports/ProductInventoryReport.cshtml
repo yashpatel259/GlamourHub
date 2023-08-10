@@ -1,0 +1,34 @@
+﻿@model List<GlamourHub.Models.ProductInventory>
+
+@await Html.PartialAsync("_AdminNavbar")
+
+<div class="row py-3">
+    <div class="col-md-6">
+        <h2>Product Inventory Report</h2>
+    </div>
+    <div class="col-md-6">
+        <a class="btn btn-primary mb-3 float-end" asp-area="" asp-controller="Reports" asp-action="PrintProductInventory">Print</a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead class="card-header">
+            <tr>
+                <th>Product Name</th>
+                <th>In Stock</th>
+                <th>Sold Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>@product.ProductName</td>
+                    <td>@product.InStock</td>
+                    <td>@product.SoldQuantity</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

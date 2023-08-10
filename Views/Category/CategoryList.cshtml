@@ -1,8 +1,5 @@
 ﻿@model IEnumerable<GlamourHub.Models.Category>
 
-@{
-    ViewData["Title"] = "Categories";
-}
 @await Html.PartialAsync("_AdminNavbar")
 
 <div class="row py-3">
@@ -11,7 +8,6 @@
     </div>
     <div class="col-md-6">
         <a class="btn btn-primary mb-3 float-end" asp-area="" asp-controller="Category" asp-action="AddCategory">Add New Category</a>
-
     </div>
 </div>
 
@@ -23,6 +19,7 @@
             <th>Actions</th>
         </tr>
     </thead>
+
     <tbody>
         @foreach (var category in Model)
         {
@@ -42,3 +39,17 @@
     </tbody>
 </table>
 
+<div class="row mt-3">
+    <div class="col-md-12 text-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                @for (var i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("CategoryList", new { page = i })">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>

@@ -33,6 +33,11 @@ namespace GlamourHub.Models
             // Use FromSqlRaw to execute the stored procedure and map the result to the OrderDetail model
             return this.Set<OrderDetail>().FromSqlRaw("EXEC sp_get_order_details").ToList();
         }
+        public List<ProductInventory> GetProductInventory()
+        {
+            // Use FromSqlRaw to execute the stored procedure and map the result to the ProductInventory model
+            return this.Set<ProductInventory>().FromSqlRaw("EXEC sp_get_product_inventory").ToList();
+        }
 
         public IEnumerable<string> GetProductNames()
         {
@@ -60,6 +65,13 @@ namespace GlamourHub.Models
             {
                 // Specify the mapping if necessary
                 entity.ToView("sp_get_order_details");
+            });
+
+            // Register the ProductInventory model class
+            modelBuilder.Entity<ProductInventory>(entity =>
+            {
+                // Specify the mapping if necessary
+                entity.ToView("sp_get_product_inventory");
             });
 
             modelBuilder.Entity<Address>(entity =>

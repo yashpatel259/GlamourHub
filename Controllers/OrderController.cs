@@ -12,34 +12,49 @@ namespace GlamourHub.Controllers
             _dbContext = dbContext;
         }
 
-        [HttpGet]
-        public IActionResult OrdersList()
+        public IActionResult OrdersList(int? page)
         {
-            // Check if session data exists
-            if (!ValidateRole())
+            try
             {
-                // Redirect to the login page if session data is missing
-                return RedirectToAction("Index", "Login");
+                // Check if session data exists
+                if (!ValidateRole())
+                {
+                    // Redirect to the login page if session data is missing
+                    return RedirectToAction("Index", "Login");
+                }
+
+                int pageSize = 10; // Change this to the desired page size
+                int pageNumber = page ?? 1;
+
+                // Fetch all orders from the database with relevant information, including user details
+                var orders = _dbContext.Order
+                    .Include(o => o.order_items) // Include order items for counting
+                    .OrderByDescending(o => o.OrderDate) // Sort by OrderDate in descending order
+                    .ToList();
+
+                var pagedOrders = orders.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+                // Create a list of OrderSummaryViewModel for the current page
+                var orderSummaries = pagedOrders.Select(o => new OrderSummaryViewModel
+                {
+                    OrderId = o.Id,
+                    CustomerName = $"{o.FirstName} {o.LastName}",
+                    ItemCount = o.order_items.Count, // Count the number of order items
+                    OrderDate = o.OrderDate,
+                    TotalBill = o.GrandTotal
+                }).ToList();
+
+                ViewBag.CurrentPage = pageNumber;
+                ViewBag.TotalPages = (int)Math.Ceiling((double)orders.Count() / pageSize);
+
+                return View(orderSummaries);
             }
-
-            // Fetch all orders from the database with relevant information, including user details
-            var orders = _dbContext.Order
-                .Include(o => o.order_items) // Include order items for counting
-                .OrderByDescending(o => o.OrderDate) // Sort by OrderDate in descending order
-                .ToList();
-
-            // Create a list of OrderSummaryViewModel
-            var orderSummaries = orders.Select(o => new OrderSummaryViewModel
+            catch (Exception ex)
             {
-                OrderId = o.Id,
-                CustomerName = $"{o.FirstName} {o.LastName}",
-                ItemCount = o.order_items.Count, // Count the number of order items
-                OrderDate = o.OrderDate,
-                TotalBill = o.GrandTotal
-            }).ToList();
-
-            return View(orderSummaries);
+                return null;
+            }
         }
+
 
         [HttpGet]
         public IActionResult OrderDetails(int id)

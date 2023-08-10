@@ -188,24 +188,41 @@ namespace GlamourHub.Controllers
             _dbContext.SaveChanges();
 
             return RedirectToAction("ProductList");
-        }
+        } 
 
         // GET
-        public IActionResult ProductList()
+        public IActionResult ProductList(int? page)
         {
-            // Check if session data exists
-            if (!ValidateRole())
+            try
             {
-                // Redirect to login page if session data is missing
-                return RedirectToAction("Index", "Login");
-            }
-            var productList = _dbContext.Products
-                .Include(p => p.Category)
-                .Include(p => p.Brand)
-                .ToList();
+                // Check if session data exists
+                if (!ValidateRole())
+                {
+                    // Redirect to login page if session data is missing
+                    return RedirectToAction("Index", "Login");
+                }
 
-            return View(productList);
+                int pageSize = 10; // Change this to the desired page size
+                int pageNumber = page ?? 1;
+
+                var productList = _dbContext.Products
+                    .Include(p => p.Category)
+                    .Include(p => p.Brand)
+                    .ToList();
+
+                var pagedProducts = productList.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+                ViewBag.CurrentPage = pageNumber;
+                ViewBag.TotalPages = (int)Math.Ceiling((double)productList.Count() / pageSize);
+
+                return View(pagedProducts);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
+
 
         [AllowAnonymous]
         public IActionResult Shop(int? page, string categoryFilter, string brandFilter, string priceFilter)

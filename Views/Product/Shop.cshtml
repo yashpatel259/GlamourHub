@@ -87,7 +87,7 @@
 
     <!-- Pagination links -->
 
-    <ul class="pagination">
+    <ul class="pagination pagination-custom">
         @if (Model.Products.HasPreviousPage)
         {
             <li class="page-item">
@@ -170,6 +170,20 @@
                     // Show/hide the "No products found" message based on productsFound counter
                     const noProductMessage = document.getElementById("noProductMessage");
                     noProductMessage.style.display = productsFound === 0 ? "block" : "none";
+
+                    // Check if filters are applied
+                    const filtersApplied = selectedCategoryId !== "" || selectedBrandId !== "" || selectedPriceRange !== "";
+
+                    // Get the pagination element
+                    const pagination = document.querySelector(".pagination-custom");
+
+                    // Show or hide the pagination based on whether filters are applied
+                    if (filtersApplied) {
+                        pagination.style.visibility = "hidden";
+                    } else {
+                        pagination.style.visibility = "visible";
+                    }
+
                 }
             }
 

@@ -19,18 +19,35 @@ namespace GlamourHub.Controllers
             return View();
         }
 
-        public IActionResult CategoryList()
+        public IActionResult CategoryList(int? page)
         {
-            // Check if session data exists
-            if (!ValidateRole())
+            try
             {
-                // Redirect to login page if session data is missing
-                return RedirectToAction("Index", "Login");
-            }
-            IEnumerable<Category> category = _dbContext.Categories;
+                // Check if session data exists
+                if (!ValidateRole())
+                {
+                    // Redirect to login page if session data is missing
+                    return RedirectToAction("Index", "Login");
+                }
 
-            return View(category);
+                int pageSize = 10; // Change this to the desired page size
+                int pageNumber = page ?? 1;
+
+                var categories = _dbContext.Categories.ToList();
+
+                var pagedCategories = categories.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+                ViewBag.CurrentPage = pageNumber;
+                ViewBag.TotalPages = (int)Math.Ceiling((double)categories.Count() / pageSize);
+
+                return View(pagedCategories);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
+
 
         [HttpGet]
         public IActionResult AddCategory()

@@ -27,6 +27,7 @@ namespace GlamourHub.Models
         public decimal GrandTotal { get; set; }
         public bool IsFreeShipping { get; set; }
         public DateTime OrderDate { get; set; }
+        public bool IsPaymentSuccess { get; set; }
 
         // Navigation property for the order items
         public List<order_items> order_items { get; set; }

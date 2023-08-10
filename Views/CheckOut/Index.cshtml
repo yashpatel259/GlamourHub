@@ -118,7 +118,7 @@
             </div>
         </div>
         <div class="col-md-6">
-            <h2>Payment Information</h2>
+           @* <h2>Payment Information</h2>
             <div class="form-group">
                 <label for="cardNumber">Card Number</label>
                 <input type="text" class="form-control" id="cardNumber" name="cardNumber" value="@Model.CardNumber">
@@ -135,7 +135,7 @@
                     <input type="password" class="form-control" id="cvv" name="cvv" value="@Model.Cvv">
                     @Html.ValidationMessageFor(m => m.Cvv)
                 </div>
-            </div>
+            </div>*@
 
             <button type="submit" class="btn btn-success mt-2">Complete Order</button>
             <a href="/Product/Shop" class="btn btn-primary mt-2">Continue Shopping</a>

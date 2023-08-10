@@ -23,7 +23,7 @@
     <tbody>
         @foreach (var order in Model)
         {
-            <tr class="table-primarygh" data-url="@Url.Action("OrderDetails", "Order", new { id = order.OrderId })">
+            <tr data-url="@Url.Action("OrderDetails", "Order", new { id = order.OrderId })">
                 <td>@order.CustomerName</td>
                 <td>@order.ItemCount</td>
                 <td>@order.OrderDate</td>

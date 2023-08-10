@@ -27,6 +27,13 @@ namespace GlamourHub.Models
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<Review> Reviews { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
+
+        public List<OrderDetail> GetOrderDetails()
+        {
+            // Use FromSqlRaw to execute the stored procedure and map the result to the OrderDetail model
+            return this.Set<OrderDetail>().FromSqlRaw("EXEC sp_get_order_details").ToList();
+        }
+
         public IEnumerable<string> GetProductNames()
         {
             return Products.Select(p => p.Name).ToList();
@@ -48,6 +55,13 @@ namespace GlamourHub.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Register the OrderDetail model class
+            modelBuilder.Entity<OrderDetail>(entity =>
+            {
+                // Specify the mapping if necessary
+                entity.ToView("sp_get_order_details");
+            });
+
             modelBuilder.Entity<Address>(entity =>
             {
                 entity.ToTable("addresses");
@@ -206,33 +220,6 @@ namespace GlamourHub.Models
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
                 .HasColumnType("decimal(18,2)");
-
-            //modelBuilder.Entity<OrderItem>(entity =>
-            //{
-            //    entity.ToTable("order_items");
-
-            //    entity.Property(e => e.Id).HasColumnName("id");
-
-            //    entity.Property(e => e.OrderId).HasColumnName("order_id");
-
-            //    entity.Property(e => e.Price)
-            //        .HasColumnType("decimal(10, 2)")
-            //        .HasColumnName("price");
-
-            //    entity.Property(e => e.ProductId).HasColumnName("product_id");
-
-            //    entity.Property(e => e.Quantity).HasColumnName("quantity");
-
-            //    entity.HasOne(d => d.Order)
-            //        .WithMany(p => p.OrderItems)
-            //        .HasForeignKey(d => d.OrderId)
-            //        .HasConstraintName("FK__order_ite__order__3D5E1FD2");
-
-            //    entity.HasOne(d => d.Product)
-            //        .WithMany(p => p.OrderItems)
-            //        .HasForeignKey(d => d.ProductId)
-            //        .HasConstraintName("FK__order_ite__produ__3E52440B");
-            //});
 
             modelBuilder.Entity<Payment>(entity =>
                 {

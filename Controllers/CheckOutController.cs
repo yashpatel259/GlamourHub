@@ -4,6 +4,8 @@ using GlamourHub.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Stripe;
+using Stripe.Checkout;
 
 namespace GlamourHub.Controllers
 {
@@ -11,6 +13,8 @@ namespace GlamourHub.Controllers
     {
 
         private readonly GlamourHubContext _dbContext;
+        private readonly string _stripeSecretKey = "sk_test_51NahmtE7u4zmWjouuyhi50nyPPbN1ywQeWGQO7AWsNRXF5sDTwiLsYl0BmXPdOUbBCbgtVzxGqHNFVU9TIRzvNgF00d5IOi7Cb";
+
         public CheckOutController(GlamourHubContext dbContext)
         {
             _dbContext = dbContext;
@@ -65,7 +69,8 @@ namespace GlamourHub.Controllers
                     // Calculate the order summary values
                     CalculateOrderSummary(model);
 
-                    // Save the order to the database
+
+                    // Create a new order instance with IsPaymentSuccess set to false
                     var order = new Order
                     {
                         UserId = userId,
@@ -82,13 +87,22 @@ namespace GlamourHub.Controllers
                         DeliveryAmount = model.DeliveryAmount,
                         GrandTotal = model.GrandTotal,
                         IsFreeShipping = model.IsFreeShipping,
-                        OrderDate = DateTime.Now
+                        OrderDate = DateTime.Now,
+                        IsPaymentSuccess = false // Set IsPaymentSuccess to false initially
                     };
 
                     _dbContext.Order.Add(order);
                     _dbContext.SaveChanges();
 
-                    // Save the order items to the database
+                    var lastRecordId = _dbContext.Order.Where(order => order.UserId == userId).Max(x => x.Id);
+
+                    // Save the order ID in session
+                    HttpContext.Session.SetInt32("OrderId", lastRecordId);
+
+                    // Create a list to store the line items for the session
+                    var lineItems = new List<SessionLineItemOptions>();
+
+                    // Add each product in the cart to the line items
                     foreach (var cartItem in model.CartItems)
                     {
                         // Retrieve the product entity using the ProductId
@@ -96,29 +110,78 @@ namespace GlamourHub.Controllers
 
                         if (product != null)
                         {
-                            var orderItem = new order_items
+                            // Add the product details to the line items
+                            lineItems.Add(new SessionLineItemOptions
                             {
-                                OrderId = order.Id,
-                                ProductId = (int)cartItem.ProductId,
-                                Quantity = cartItem.Quantity,
-                                Price = product.Price // Access the product's Price property
-                            };
-
-                            _dbContext.order_items.Add(orderItem);
+                                PriceData = new SessionLineItemPriceDataOptions
+                                {
+                                    UnitAmount = (long)(product.Price * 100), // Amount in cents
+                                    Currency = "cad",
+                                    ProductData = new SessionLineItemPriceDataProductDataOptions
+                                    {
+                                        Name = product.Name, // Product name from the Product model
+                                    },
+                                },
+                                Quantity = cartItem.Quantity, // The quantity of this product in the session
+                            });
                         }
                     }
-                    // Clear the cart
-                    ClearCart();
 
-                    _dbContext.SaveChanges();
+                    lineItems.Add(new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            UnitAmount = (long)(model.TaxAmount * 100), // Amount in cents
+                            Currency = "cad",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = "Tax(13%)",
+                            },
+                        },
+                        Quantity = 1,
+                    });
 
-                    // Redirect to a success page or perform any additional actions
-                    return RedirectToAction("ThankYou", "CheckOut");
+                    lineItems.Add(new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            UnitAmount = (long)(model.DeliveryAmount * 100), // Amount in cents
+                            Currency = "cad",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = "Delivery charge",
+                            },
+                        },
+                        Quantity = 1,
+                    });
+
+
+                    // Create a new Session using Stripe's SessionCreateOptions
+                    var options = new SessionCreateOptions
+                    {
+                        PaymentMethodTypes = new List<string>
+                        {
+                            "card"
+                        },
+                        LineItems = lineItems, // Use the list of line items we created
+                        Mode = "payment",
+                        SuccessUrl = "https://localhost:7153/Checkout/ThankYou", // Redirect URL after successful payment
+                        CancelUrl = "https://localhost:7153/Checkout/Index", // Redirect URL if the payment is canceled
+                    };
+
+                    var service = new SessionService();
+                    var session = service.Create(options);
+
+
+
+                    // Redirect the user to the Stripe hosted payment page
+                    return Redirect(session.Url);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Handle any exceptions that might occur during the database operations
+                // Handle any exceptions that might occur during the database operations or payment processing
+                ModelState.AddModelError("", "An error occurred while processing your order. Please try again later.");
             }
 
             var cart = GetCartItems();
@@ -139,15 +202,96 @@ namespace GlamourHub.Controllers
 
         public IActionResult ThankYou()
         {
-            // Check if session data exists
-            if (!ValidateRole())
+            try
             {
-                // Redirect to login page if session data is missing
-                return RedirectToAction("Index", "Login");
+
+
+                // Check if session data exists
+                if (!ValidateRole())
+                {
+                    // Redirect to the login page if session data is missing
+                    return RedirectToAction("Index", "Login");
+                }
+
+                // Get the UserId using the GetUserId() method
+                int userId = GetUserId();
+
+
+                // Retrieve the order ID from session
+                int? orderId = HttpContext.Session.GetInt32("OrderId");
+
+                if (orderId == null)
+                {
+                    // If the orderId is null, handle the situation appropriately (e.g., redirect to an error page)
+                    return RedirectToAction("Index", "Error");
+                }
+
+                // Retrieve the order from the database using orderId
+                var order = _dbContext.Order.FirstOrDefault(o => o.UserId == userId && o.Id == orderId);
+
+                if (order == null)
+                {
+                    // If the order is null, handle the situation appropriately (e.g., redirect to an error page)
+                    return RedirectToAction("Index", "Error");
+                }
+
+                // Update the order in the database to set IsPaymentSuccess to true
+                order.IsPaymentSuccess = true;
+                _dbContext.SaveChanges();
+
+                // Retrieve the cart items for the specific user from the "Cart" table
+                var cartItems = _dbContext.Cart.Where(cart => cart.UserId == userId).ToList();
+
+                // Save the order items to the database
+                foreach (var cartItem in cartItems)
+                {
+                    // Retrieve the product entity using the ProductId
+                    var product = _dbContext.Products.FirstOrDefault(p => p.Id == cartItem.ProductId);
+
+                    if (product != null)
+                    {
+                        var orderItem = new order_items
+                        {
+                            OrderId = order.Id,
+                            ProductId = (int)cartItem.ProductId,
+                            Quantity = cartItem.Quantity,
+                            Price = product.Price // Access the product's Price property
+                        };
+
+                        _dbContext.order_items.Add(orderItem);
+                        // Update the stock quantity of the product in the "Products" table
+                        product.StockQuantity -= cartItem.Quantity;
+                    }
+                }
+
+                _dbContext.SaveChanges();
+
+                // Clear the cart
+                ClearCart();
+
+
+                // Redirect to the thank you page or perform any additional actions
+                return View();
             }
-            
-            return View();
+            catch (Exception ex)
+            {
+                return null;
+                
+            }
         }
+
+
+        //public IActionResult ThankYou()
+        //{ 
+        //    // Check if session data exists
+        //    if (!ValidateRole())
+        //    {
+        //        // Redirect to login page if session data is missing
+        //        return RedirectToAction("Index", "Login");
+        //    }
+
+        //    return View();
+        //}
 
         private void CalculateOrderSummary(CheckoutViewModel model)
         {
@@ -202,63 +346,3 @@ namespace GlamourHub.Controllers
     }
 }
 
-
-
-
-//[HttpPost]
-//public IActionResult ThankYou(OrderViewModel model)
-//{
-//    if (ModelState.IsValid)
-//    {
-//        // Create and populate the Address object for billing and shipping address
-//        var billingAddress = new Address
-//        {
-//            BillingFirstName = model.FirstName,
-//            BillingLastName = model.LastName,
-//            BillingStreet = model.Address,
-//            BillingCity = model.City,
-//            BillingState = model.State,
-//            BillingPostalCode = model.PostalCode
-//        };
-
-//        var shippingAddress = model.SameAsBilling ? billingAddress : new Address
-//        {
-//            ShippingFirstName = model.ShippingFirstName,
-//            ShippingLastName = model.ShippingLastName,
-//            ShippingStreet = model.ShippingAddress,
-//            ShippingCity = model.ShippingCity,
-//            ShippingState = model.ShippingState,
-//            ShippingPostalCode = model.ShippingPostalCode
-//        };
-
-//        // Save the address objects to the database
-//        _dbContext.Addresses.Add(billingAddress);
-//        if (!model.SameAsBilling)
-//            _dbContext.Addresses.Add(shippingAddress);
-//        _dbContext.SaveChanges();
-
-//        // Create the Order object
-//        var order = new Order
-//        {
-//            UserId = GetUserId(),
-//            OrderDate = DateTime.Now,
-//            TotalAmount = model.TotalAmount,
-//            DeliveryCharge = model.DeliveryAmount,
-//            BillingAddressId = billingAddress.Id,
-//            ShippingAddressId = model.SameAsBilling ? billingAddress.Id : shippingAddress.Id,
-//            // Other order properties
-//        };
-
-//        // Save the order to the database
-//        _dbContext.Orders.Add(order);
-//        _dbContext.SaveChanges();
-
-//        // Clear the cart or perform any other necessary operations
-
-//        // Redirect to a thank you page or show a success message
-//        return RedirectToAction("ThankYou");
-//    }
-
-//    // If the form data is invalid, redisplay the checkout page with validation errors
-//    return View("Checkout", model);
-//}

@@ -1,0 +1,44 @@
+﻿@model List<OrderDetail>
+
+<div class="row py-3">
+    <div class="col-md-6">
+        <h2>Order Details Repor</h2>
+    </div>
+    <div class="col-md-6">
+        <a class="btn btn-primary mb-3 float-end" asp-area="" asp-controller="Reports" asp-action="Print" >Print</a>
+    </div>
+</div>
+
+<table class="table table-striped table-responsive-md">
+    <thead class="card-header">
+        <tr>
+            <th>Order No.</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Country</th>
+            <th>Phone</th>
+            <th>Order Date</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>QTY</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.orderid</td>
+                <td>@order.FirstName @order.LastName</td>
+                <td>@order.Street @order.City @order.State @order.PostalCode</td>
+                <td>@order.Country</td>
+                <td>@order.Phone</td>
+                <td>@order.OrderDate</td>
+                <td>@order.productname</td>
+                <td>@order.productprice</td>
+                <td>@order.quantity</td>
+                <td>@order.GrandTotal</td>
+            </tr>
+        }
+    </tbody>
+</table>

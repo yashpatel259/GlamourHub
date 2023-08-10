@@ -11,6 +11,7 @@ namespace GlamourHub.ViewModels
     public class CheckoutViewModel
     {
         public List<Cart>? CartItems { get; set; }
+        public int Id { get; set; }
 
         // Shipping address properties with validation attributes
         [Required(ErrorMessage = "The First Name field is required.")]
@@ -39,18 +40,18 @@ namespace GlamourHub.ViewModels
         [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Invalid Phone number. Please enter a 10-digit number without any spaces or dashes.")]
         public string Phone { get; set; }
 
-        // Payment information properties with validation attributes
-        [Required(ErrorMessage = "The Card Number field is required.")]
-        [RegularExpression(@"^\d{16}$", ErrorMessage = "Invalid Card Number. Please enter a 16-digit number.")]
-        public string CardNumber { get; set; }
+        //// Payment information properties with validation attributes
+        //[Required(ErrorMessage = "The Card Number field is required.")]
+        //[RegularExpression(@"^\d{16}$", ErrorMessage = "Invalid Card Number. Please enter a 16-digit number.")]
+        //public string CardNumber { get; set; }
 
-        [Required(ErrorMessage = "The Expiration Date field is required.")]
-        [CustomValidation(typeof(CheckoutViewModel), "ValidateExpirationDate")]
-        public DateTime ExpirationDate { get; set; }
+        //[Required(ErrorMessage = "The Expiration Date field is required.")]
+        //[CustomValidation(typeof(CheckoutViewModel), "ValidateExpirationDate")]
+        //public DateTime ExpirationDate { get; set; }
 
-        [Required(ErrorMessage = "The CVV field is required.")]
-        [RegularExpression(@"^\d{3}$", ErrorMessage = "Invalid CVV. Please enter a 3-digit number.")]
-        public string Cvv { get; set; }
+        //[Required(ErrorMessage = "The CVV field is required.")]
+        //[RegularExpression(@"^\d{3}$", ErrorMessage = "Invalid CVV. Please enter a 3-digit number.")]
+        //public string Cvv { get; set; }
 
         // Order summary properties
         public decimal TotalAmount { get; set; }
@@ -60,14 +61,14 @@ namespace GlamourHub.ViewModels
         public bool IsFreeShipping { get; set; }
 
         // Custom validation method for validating expiration date not in the past
-        public static ValidationResult ValidateExpirationDate(DateTime date, ValidationContext context)
-        {
-            if (date < DateTime.Now)
-            {
-                return new ValidationResult("Expiration Date should not be in the past.");
-            }
-            return ValidationResult.Success;
-        }
+        //public static ValidationResult ValidateExpirationDate(DateTime date, ValidationContext context)
+        //{
+        //    if (date < DateTime.Now)
+        //    {
+        //        return new ValidationResult("Expiration Date should not be in the past.");
+        //    }
+        //    return ValidationResult.Success;
+        //}
     }
 
 }

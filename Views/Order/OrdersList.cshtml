@@ -1,5 +1,9 @@
 ﻿@model List<OrderSummaryViewModel>
 
+@{
+    ViewData["Title"] = "Orders";
+}
+
 @if (Context.Session.GetString("Role") == "Admin")
 {
     @await Html.PartialAsync("_AdminNavbar")

@@ -8,14 +8,28 @@
         max-height: 300px;
         width: auto;
     }
+
+    /* Add black background on hover for carousel control buttons */
+    .carousel-control-prev:hover,
+    .carousel-control-next:hover {
+        background-color: black;
+        width: 5%;
+    }
+
+    /* Override the default background-color for carousel control buttons */
+    .carousel-control-prev,
+    .carousel-control-next {
+        background-color: transparent;
+        width: 5%;
+    }
 </style>
 
 <div class="container">
     <div class="row pt-2">
         <div class="col-md-12 text-center">
-            <img width="40%" height="65%" src="~/images/brand_lable.png" />
+            <img width="40%" height="65%" src="~/images/Brand_lable.png" />
             <div>
-                <img width="40%" height="65%" src="~/images/brand_tagline.png" />
+                <img width="40%" height="65%" src="~/images/Brand_tagline.png" />
             </div>
         </div>
     </div>
@@ -49,12 +63,12 @@
         </a>
     </div>
 </section>
-<section class="pt-1" id="hero-section">
+@*<section class="pt-1" id="hero-section">
     <div class="hero-image">
         <img src="~/images/sale gif.webp" alt="Hero Image" style="width: 100%; height: 80vh;">
     </div>
-</section>
-<div class="container mt-4">
+</section>*@
+@*<div class="container mt-4">
     <h2 class="text-center mb-4">Featured Products</h2>
     <div class="row">
         <div class="col-md-6">
@@ -78,7 +92,7 @@
             </div>
         </div>
     </div>
-</div>
+</div>*@
 <!-- New Arrivals Section -->
 <div class="container mt-4">
     <h2 class="text-center mb-4">New Arrivals</h2>

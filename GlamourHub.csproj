@@ -19,10 +19,16 @@
 
   <ItemGroup>
     <Content Remove="Views\Admin\UsersList.cshtml" />
+    <Content Remove="wwwroot\Reports\ProductInventory.rdlc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Reports\ProductInventory.rdlc" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.Reporting" Version="2.1.0" />
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.20" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />

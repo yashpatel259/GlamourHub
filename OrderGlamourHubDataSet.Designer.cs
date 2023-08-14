@@ -1085,7 +1085,7 @@ namespace RDLCDesign.OrderGlamourHubDataSetTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = "Data Source=LAPTOP-JOIT8OMU\\SQLEXPRESS;Initial Catalog=GlamourHub;Integrated Secu" +
+            this._connection.ConnectionString = "Data Source=glamourhub.c15gn8k9jyab.us-east-2.rds.amazonaws.com;Initial Catalog=GlamourHub;Integrated Secu" +
                 "rity=True";
         }
         

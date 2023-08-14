@@ -1,5 +1,8 @@
 ﻿@model List<GlamourHub.Models.ProductInventory>
 
+@{
+    ViewData["Title"] = "Product Inventory";
+}
 @await Html.PartialAsync("_AdminNavbar")
 
 <div class="row py-3">
@@ -7,7 +10,7 @@
         <h2>Product Inventory Report</h2>
     </div>
     <div class="col-md-6">
-        <a class="btn btn-primary mb-3 float-end" asp-area="" asp-controller="Reports" asp-action="PrintProductInventory">Print</a>
+        <a class="btn btn-primary mb-3 float-end" asp-area="" asp-controller="Reports" asp-action="PrintProductInventory">Export <img src="~/images/icons8-pdf-48.png" height="25px" /></a>
     </div>
 </div>
 
@@ -32,3 +35,19 @@
         </tbody>
     </table>
 </div>
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                @for (int i = 1; i <= (int)ViewData["TotalPages"]; i++)
+                {
+                    <li class="page-item @(i == (int)ViewData["CurrentPage"] ? "active" : "")">
+                        <a class="page-link" href="?page=@i&pageSize=@ViewData["PageSize"]">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+

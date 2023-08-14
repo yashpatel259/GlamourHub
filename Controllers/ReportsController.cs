@@ -50,49 +50,111 @@ namespace GlamourHub.Controllers
             }
         }
 
-        public IActionResult OrderReport()
+        //public IActionResult OrderReport()
+        //{
+        //    try
+        //    {
+        //        // Check if session data exists
+        //        if (!ValidateRole())
+        //        {
+        //            // Redirect to login page if session data is missing
+        //            return RedirectToAction("Index", "Login");
+        //        }
+
+        //        // Call the stored procedure and get the order details
+        //        List<OrderDetail> orderDetails = _dbContext.GetOrderDetails();
+
+        //        // Pass the data to the view
+        //        return View(orderDetails);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return null;
+        //    }
+        //}
+
+        public IActionResult OrderReport(int page = 1, int pageSize = 10)
         {
             try
             {
-                // Check if session data exists
-                if (!ValidateRole())
-                {
-                    // Redirect to login page if session data is missing
-                    return RedirectToAction("Index", "Login");
-                }
+                // Check if session data exists and validate role
 
                 // Call the stored procedure and get the order details
-                List<OrderDetail> orderDetails = _dbContext.GetOrderDetails();
+                List<OrderDetail> allOrderDetails = _dbContext.GetOrderDetails();
 
-                // Pass the data to the view
+                // Calculate the number of pages
+                int totalPages = (int)Math.Ceiling(allOrderDetails.Count / (double)pageSize);
+
+                // Ensure the page number is within valid range
+                page = Math.Max(1, Math.Min(totalPages, page));
+
+                // Get the relevant portion of order details for the current page
+                List<OrderDetail> orderDetails = allOrderDetails.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+                // Pass the data to the view along with pagination info
+                ViewData["TotalPages"] = totalPages;
+                ViewData["CurrentPage"] = page;
+                ViewData["PageSize"] = pageSize;
+
                 return View(orderDetails);
             }
             catch (Exception ex)
             {
-                return null;
+                return null; // Handle the exception appropriately
             }
         }
 
-        public IActionResult ProductInventoryReport()
+        //public IActionResult ProductInventoryReport()
+        //{
+        //    try
+        //    {
+        //        // Check if session data exists
+        //        if (!ValidateRole())
+        //        {
+        //            // Redirect to login page if session data is missing
+        //            return RedirectToAction("Index", "Login");
+        //        }
+
+        //        // Call the stored procedure and get the product inventory details
+        //        List<ProductInventory> productInventory = _dbContext.GetProductInventory();
+
+        //        // Pass the data to the view
+        //        return View(productInventory);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return null;
+        //    }
+        //}
+
+        public IActionResult ProductInventoryReport(int page = 1, int pageSize = 10)
         {
             try
             {
-                // Check if session data exists
-                if (!ValidateRole())
-                {
-                    // Redirect to login page if session data is missing
-                    return RedirectToAction("Index", "Login");
-                }
+                // Check if session data exists and validate role
 
                 // Call the stored procedure and get the product inventory details
-                List<ProductInventory> productInventory = _dbContext.GetProductInventory();
+                List<ProductInventory> allProductInventory = _dbContext.GetProductInventory();
 
-                // Pass the data to the view
+                // Calculate the number of pages
+                int totalPages = (int)Math.Ceiling(allProductInventory.Count / (double)pageSize);
+
+                // Ensure the page number is within valid range
+                page = Math.Max(1, Math.Min(totalPages, page));
+
+                // Get the relevant portion of product inventory for the current page
+                List<ProductInventory> productInventory = allProductInventory.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+                // Pass the data to the view along with pagination info
+                ViewData["TotalPages"] = totalPages;
+                ViewData["CurrentPage"] = page;
+                ViewData["PageSize"] = pageSize;
+
                 return View(productInventory);
             }
             catch (Exception ex)
             {
-                return null;
+                return null; // Handle the exception appropriately
             }
         }
 

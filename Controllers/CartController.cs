@@ -6,10 +6,11 @@ using GlamourHub.Models;
 using GlamourHub.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Policy;
 
 namespace GlamourHub.Controllers
 {
-  
+
     public class CartController : Controller
     {
         private readonly GlamourHubContext _dbContext;
@@ -34,7 +35,7 @@ namespace GlamourHub.Controllers
 
         // POST: /Cart/AddToCart
         [HttpPost]
-        public IActionResult AddToCart(int productId,int quantity)
+        public IActionResult AddToCart(int productId, int quantity)
         {
             var product = _dbContext.Products.Find(productId);
             if (product == null)
@@ -47,7 +48,7 @@ namespace GlamourHub.Controllers
             var existingItem = cart.FirstOrDefault(item => item.ProductId == productId);
             if (existingItem != null)
             {
-                existingItem.Quantity = existingItem.Quantity+ quantity;
+                existingItem.Quantity = existingItem.Quantity + quantity;
             }
             else
             {
@@ -59,9 +60,12 @@ namespace GlamourHub.Controllers
                 cart.Add(newItem);
             }
 
-            SaveCartItems(cart);
-
-            return RedirectToAction("Index", "Cart");
+            int url = SaveCartItems(cart);
+            if (url > 0)
+            {
+                return RedirectToAction("Index", "Cart");
+            }
+            else { return RedirectToAction("Index", "Login"); }
         }
 
 
@@ -70,18 +74,22 @@ namespace GlamourHub.Controllers
         public IActionResult RemoveFromCart(int productId)
         {
             var cart = GetCartItems();
-
+            int i = 0;
             var item = cart.FirstOrDefault(item => item.ProductId == productId);
             if (item != null)
             {
                 cart.Remove(item);
-                SaveCartItems(cart);
+                i = SaveCartItems(cart);
             }
+            if (i > 0)
+            {
+                return RedirectToAction("Index", "Cart");
+            }
+            else { return RedirectToAction("Index", "Login"); }
 
-            return RedirectToAction("Index", "Cart");
         }
 
-       
+
 
         private List<Cart> GetCartItems()
         {
@@ -89,38 +97,43 @@ namespace GlamourHub.Controllers
             return _dbContext.Cart.Include(cart => cart.Product).Where(cart => cart.UserId == userId).ToList();
         }
 
-        private void SaveCartItems(List<Cart> cart)
+        private int SaveCartItems(List<Cart> cart)
         {
             var userId = GetUserId();
-
-            // Get the existing cart items for the user
-            var existingItems = _dbContext.Cart.Where(cart => cart.UserId == userId).ToList();
-
-            // Update existing items and remove items that are no longer in the cart
-            foreach (var existingItem in existingItems)
+            if (userId > 0)
             {
-                var newItem = cart.FirstOrDefault(item => item.ProductId == existingItem.ProductId);
-                if (newItem != null)
-                {
-                    // Update the quantity
-                    existingItem.Quantity = newItem.Quantity;
-                    cart.Remove(newItem); // Remove the item from the cart list to avoid duplicates
-                }
-                else
-                {
-                    // The item was removed from the cart, so remove it from the database
-                    _dbContext.Cart.Remove(existingItem);
-                }
-            }
 
-            // Add new cart items
-            foreach (var newItem in cart)
-            {
-                newItem.UserId = userId;
-                _dbContext.Cart.Add(newItem);
-            }
 
-            _dbContext.SaveChanges();
+                // Get the existing cart items for the user
+                var existingItems = _dbContext.Cart.Where(cart => cart.UserId == userId).ToList();
+
+                // Update existing items and remove items that are no longer in the cart
+                foreach (var existingItem in existingItems)
+                {
+                    var newItem = cart.FirstOrDefault(item => item.ProductId == existingItem.ProductId);
+                    if (newItem != null)
+                    {
+                        // Update the quantity
+                        existingItem.Quantity = newItem.Quantity;
+                        cart.Remove(newItem); // Remove the item from the cart list to avoid duplicates
+                    }
+                    else
+                    {
+                        // The item was removed from the cart, so remove it from the database
+                        _dbContext.Cart.Remove(existingItem);
+                    }
+                }
+
+                // Add new cart items
+                foreach (var newItem in cart)
+                {
+                    newItem.UserId = userId;
+                    _dbContext.Cart.Add(newItem);
+                }
+
+                _dbContext.SaveChanges();
+            }
+            return userId;
         }
 
         public int GetTotalProductsInCart(string username)
@@ -146,16 +159,26 @@ namespace GlamourHub.Controllers
 
         private int GetUserId()
         {
-            var username = HttpContext.Session.GetString("Username");
-
-            var user = _dbContext.Users.FirstOrDefault(u => u.Username == username);
-
-            if (user != null)
+            try
             {
-                return user.Id;
-            }
+                var username = HttpContext.Session.GetString("Username");
 
-            throw new Exception("User not found.");
+                var user = _dbContext.Users.FirstOrDefault(u => u.Username == username);
+
+                if (user != null)
+                {
+                    return user.Id;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            catch (Exception)
+            {
+
+                return 0;
+            }
         }
 
         private void ClearCart()
